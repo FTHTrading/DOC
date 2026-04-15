@@ -18,6 +18,7 @@ import { intakeRoutes } from "./routes/intake.js";
 import { workflowsRoutes } from "./routes/workflows.js";
 import { reportsRoutes } from "./routes/reports.js";
 import { aiCommandRoutes } from "./routes/ai-commands.js";
+import { fthPayRoutes } from "./routes/fth-pay.js";
 
 const PORT = Number(process.env["PORT"] ?? 4000);
 const JWT_SECRET = process.env["JWT_SECRET"];
@@ -64,6 +65,7 @@ async function bootstrap() {
   await app.register(workflowsRoutes, { prefix: "/workflows" });
   await app.register(reportsRoutes, { prefix: "/reports" });
   await app.register(aiCommandRoutes, { prefix: "/ai/commands" });
+  await app.register(fthPayRoutes, { prefix: "/fth/pay" });
 
   // ─── Global error handler ───────────────────────────────────────────────────
   app.setErrorHandler((err, _req, reply) => {

@@ -1,21 +1,58 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
-  --navy: #1e3a5f;
-  --emerald: #10b981;
-  --gold: #f59e0b;
-  --btc: #f97316;
-  --purple: #7c3aed;
-  --crimson: #dc2626;
-  --steel: #64748b;
-  --ice: #0ea5e9;
+  --navy: #12324b;
+  --slate: #0c1525;
+  --aqua: #1cc5d8;
+  --emerald: #14b87a;
+  --amber: #f2b445;
+  --ruby: #d9504f;
+  --paper: #dbe7f0;
 }
 
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
 
-body { background-color: #0a0f1e; }
+body {
+  margin: 0;
+  background:
+    radial-gradient(1000px 460px at 15% -10%, rgba(28, 197, 216, 0.15), transparent 60%),
+    radial-gradient(700px 320px at 90% -5%, rgba(242, 180, 69, 0.12), transparent 55%),
+    linear-gradient(180deg, #0a1322 0%, #0c1525 45%, #09101b 100%);
+  color: #f3f8ff;
+  font-family: "Manrope", system-ui, sans-serif;
+}
+
+code,
+.font-mono {
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse-border {
+  0% { box-shadow: 0 0 0 0 rgba(28, 197, 216, 0.32); }
+  70% { box-shadow: 0 0 0 12px rgba(28, 197, 216, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(28, 197, 216, 0); }
+}
+
+.rise-in {
+  animation: rise-in 0.6s ease-out both;
+}
+
+.pulse-border {
+  animation: pulse-border 2.2s infinite;
+}

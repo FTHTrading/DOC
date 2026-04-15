@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import Link from "next/link";
 
 export default function OnboardPage() {
   const [type, setType] = useState<"investor" | "issuer" | "partner">("investor");
@@ -58,7 +59,7 @@ export default function OnboardPage() {
           Thank you for your interest. A licensed representative will review your submission and
           contact you within one business day. All inquiries are handled confidentially.
         </p>
-        <a href="/" className="text-[#0ea5e9] hover:underline">← Return to home</a>
+        <Link href="/" className="text-[#0ea5e9] hover:underline">← Return to home</Link>
       </div>
     );
   }

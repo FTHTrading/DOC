@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function PartnersPage() {
   const tracks = [
     {
@@ -61,12 +63,12 @@ export default function PartnersPage() {
           Submit your partner profile to be evaluated for distribution fit, compliance readiness, and operational alignment.
           Approved partners are onboarded into a structured routing and reporting workflow.
         </p>
-        <a
+        <Link
           href="/onboard?type=partner"
           className="inline-block bg-[#0ea5e9] hover:bg-[#0ea5e9]/80 text-black font-semibold px-8 py-3 rounded-xl transition-colors"
         >
           Apply as a Partner
-        </a>
+        </Link>
       </div>
     </div>
   );

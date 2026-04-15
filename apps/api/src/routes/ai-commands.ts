@@ -3,6 +3,11 @@ import type { FastifyInstance } from "fastify";
 import { z } from "zod";
 import { triggerWorkflow } from "@doc/orchestrator-core";
 import { writeAuditEvent } from "@doc/audit-log";
+import {
+  bindWalletToX402,
+  createX402PaymentRequest,
+  settleX402Payment,
+} from "@doc/x402-router";
 
 const executeBody = z.object({
   command: z.string().min(3),
@@ -64,12 +69,24 @@ function parseIntent(command: string): {
   }
 
   if (/send\s+\$?\d|transfer\s+/i.test(text)) {
+    // Extract amount — handles "$25k", "25,000", "25k", "$25,000"
+    const amtMatch = text.match(/\$?([\d,]+)\s*(k|thousand|m|million)?\b/i);
+    let amountUsd: number | undefined;
+    if (amtMatch) {
+      const raw = Number(amtMatch[1]!.replace(/,/g, ""));
+      const suffix = (amtMatch[2] ?? "").toLowerCase();
+      amountUsd = suffix === "k" || suffix === "thousand" ? raw * 1_000
+        : suffix === "m" || suffix === "million" ? raw * 1_000_000
+        : raw;
+    }
     return {
       intent: "payment_request",
       requiresApproval: true,
       risk: "high",
       extracted: {
-        route: /fth\s*pay/i.test(text) ? "FTH_PAY" : "INTERNAL",
+        route: "FTH_PAY",
+        executionRail: "FTH_PAY_x402",
+        ...(amountUsd !== undefined ? { amountUsd } : {}),
       },
     };
   }
@@ -185,11 +202,46 @@ export async function aiCommandRoutes(app: FastifyInstance) {
           requiresApproval: parsedIntent.requiresApproval,
           extracted: parsedIntent.extracted,
           workflowType: workflowTypeForIntent(parsedIntent.intent),
+          ...(parsedIntent.intent === "payment_request"
+            ? { executionPath: ["AI_COMMAND", "POLICY_GATE", "FTH_PAY", "x402", "SETTLEMENT"] }
+            : {}),
         },
       });
     }
 
     const workflowType = workflowTypeForIntent(parsedIntent.intent);
+    // For payment_request: if the context supplies wallet IDs, create a pending
+    // x402 payment request immediately (via FTH Pay) so it's ready for approval.
+    let pendingPaymentRequestId: string | undefined;
+    if (
+      parsedIntent.intent === "payment_request" &&
+      typeof parsed.data.context?.["fromWalletId"] === "string" &&
+      typeof parsed.data.context?.["toWalletId"] === "string" &&
+      typeof parsedIntent.extracted["amountUsd"] === "number"
+    ) {
+      const fromWalletId = parsed.data.context["fromWalletId"] as string;
+      const toWalletId = parsed.data.context["toWalletId"] as string;
+      const amountUsd = parsedIntent.extracted["amountUsd"] as number;
+      const memo = typeof parsed.data.context?.["memo"] === "string"
+        ? (parsed.data.context["memo"] as string)
+        : undefined;
+
+      await bindWalletToX402(fromWalletId);
+      await bindWalletToX402(toWalletId);
+
+      // Create pending request — approvalGranted:false holds it for explicit approval
+      const payReq = await createX402PaymentRequest({
+        ...(actor ? { actorId: actor } : {}),
+        fromWalletId,
+        toWalletId,
+        amountUsd,
+        ...(memo ? { memo } : {}),
+        approvalGranted: false,
+        complianceClear: false,
+      });
+      pendingPaymentRequestId = payReq.requestId;
+    }
+
     const wf = await triggerWorkflow({
       workflowType,
       triggerType: "manual",
@@ -201,6 +253,7 @@ export async function aiCommandRoutes(app: FastifyInstance) {
         extracted: parsedIntent.extracted,
         requiresApproval: parsedIntent.requiresApproval,
         context: parsed.data.context ?? {},
+        ...(pendingPaymentRequestId ? { x402RequestId: pendingPaymentRequestId } : {}),
       },
     });
 
@@ -222,6 +275,13 @@ export async function aiCommandRoutes(app: FastifyInstance) {
         risk: parsedIntent.risk,
         workflowRunId: wf.workflowRunId,
         workflowType,
+        ...(pendingPaymentRequestId
+          ? {
+              executionRail: "FTH_PAY_x402",
+              executionPath: ["AI_COMMAND", "POLICY_GATE", "FTH_PAY", "x402", "SETTLEMENT"],
+              x402RequestId: pendingPaymentRequestId,
+            }
+          : {}),
       },
     });
   });

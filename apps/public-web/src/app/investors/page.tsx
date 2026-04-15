@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function InvestorsPage() {
   const steps = [
     { n: "01", title: "Submit Inquiry", desc: "Complete our intake form with your investment objectives and accreditation status." },
@@ -38,12 +40,12 @@ export default function InvestorsPage() {
       </div>
 
       <div className="text-center">
-        <a
+        <Link
           href="/onboard?type=investor"
           className="inline-block bg-[#10b981] hover:bg-[#10b981]/80 text-white font-semibold px-10 py-3 rounded-xl transition-colors"
         >
           Apply as an Investor
-        </a>
+        </Link>
       </div>
     </div>
   );

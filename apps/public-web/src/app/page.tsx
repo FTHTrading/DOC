@@ -1,204 +1,149 @@
+import Link from "next/link";
+
+const rails = [
+  {
+    title: "AI Command Layer",
+    detail: "Interprets operator intent, extracts structured actions, and routes to supervised execution.",
+    tone: "border-[#1cc5d8]/35 bg-[#1cc5d8]/10 text-[#98f2ff]",
+  },
+  {
+    title: "Policy + Approval",
+    detail: "Blocks unsafe actions, enforces approvals, and ensures no high-risk autonomous execution.",
+    tone: "border-[#d9504f]/35 bg-[#d9504f]/10 text-[#ffb8b8]",
+  },
+  {
+    title: "FTH Pay Router",
+    detail: "Single controlled execution surface for payment requests, previews, and settlement status.",
+    tone: "border-[#14b87a]/35 bg-[#14b87a]/10 text-[#9ff0cb]",
+  },
+  {
+    title: "x402 Execution Rail",
+    detail: "Under-the-hood settlement rail for deterministic, auditable financial execution.",
+    tone: "border-[#f2b445]/35 bg-[#f2b445]/10 text-[#ffe09d]",
+  },
+  {
+    title: "Wallet + Signer",
+    detail: "Controlled wallet binding with signed settlement intents and chain-specific adapters.",
+    tone: "border-[#6a8cff]/35 bg-[#6a8cff]/10 text-[#cad7ff]",
+  },
+  {
+    title: "Chain Settlement",
+    detail: "XRPL, Stellar, BTC, and EVM-compatible dispatch paths with post-settlement tracking.",
+    tone: "border-white/20 bg-white/5 text-white/80",
+  },
+];
+
+const capabilities = [
+  {
+    name: "Guarded API Surface",
+    points: ["/fth/pay/execute", "/fth/pay/preview", "/fth/pay/status", "JWT protected + policy gated"],
+  },
+  {
+    name: "Execution Discipline",
+    points: ["No direct x402 exposure", "No approval bypass", "No compliance bypass", "Audit-first workflow"],
+  },
+  {
+    name: "Operator Outcomes",
+    points: ["AI-triggered deal operations", "Programmable treasury flows", "Settlement traceability", "Multi-rail expansion path"],
+  },
+];
+
+const stats = [
+  { value: "3", label: "FTH Pay Endpoints" },
+  { value: "1", label: "Execution Rail Boundary" },
+  { value: "100%", label: "Policy-Gated Payments" },
+  { value: "7yr", label: "Message Retention Target" },
+];
+
 export default function HomePage() {
-  const domains = [
-    {
-      icon: "👥",
-      title: "Investor Relations",
-      desc: "Accredited investor onboarding, KYC/AML compliance, and access to premium offerings.",
-      color: "#10b981",
-      href: "/investors",
-    },
-    {
-      icon: "🏢",
-      title: "Issuer Services",
-      desc: "Regulated securities distribution, Reg D/A+ structuring, and deal room management.",
-      color: "#f59e0b",
-      href: "/issuers",
-    },
-    {
-      icon: "🤝",
-      title: "Partner Network",
-      desc: "Referral agreements, co-broker arrangements, and white-label distribution partnerships.",
-      color: "#0ea5e9",
-      href: "/partners",
-    },
-    {
-      icon: "⚖️",
-      title: "Compliance Engine",
-      desc: "AI-powered compliance gate, Form CRS delivery, and supervisory workflow automation.",
-      color: "#dc2626",
-      href: "/compliance",
-    },
-    {
-      icon: "🤖",
-      title: "AI Orchestration",
-      desc: "8 specialized agents for intake, classification, compliance, and relationship intelligence.",
-      color: "#7c3aed",
-      href: "#",
-    },
-    {
-      icon: "₿",
-      title: "Digital Assets",
-      desc: "BTC treasury reserve monitoring, USDF stablecoin settlement, and ATP on-chain compensation.",
-      color: "#f97316",
-      href: "#",
-    },
-  ];
-
-  const stats = [
-    { label: "Compliance Gates", value: "100%", sub: "automated evaluation" },
-    { label: "Message Retention", value: "7yr", sub: "FINRA Rule 4511" },
-    { label: "AI Agents", value: "8", sub: "specialized BD agents" },
-    { label: "Settlement Rails", value: "5", sub: "ACH, wire, USDF, ATP, check" },
-  ];
-
-  const toc = [
-    { href: "#overview", label: "Overview" },
-    { href: "#domains", label: "Domain Modules" },
-    { href: "#rails", label: "Execution Rails" },
-    { href: "#controls", label: "Control Gates" },
-    { href: "#launch", label: "Launch Path" },
-  ];
-
   return (
-    <div className="max-w-6xl mx-auto px-6">
-      {/* Hero */}
-      <section id="overview" className="pt-24 pb-20 text-center">
-        <div className="inline-flex items-center gap-2 bg-[#1e3a5f]/40 border border-[#1e3a5f] rounded-full px-4 py-1.5 mb-8 text-sm text-[#0ea5e9]">
-          <span className="w-2 h-2 rounded-full bg-[#10b981] animate-pulse" />
-          Registered Broker-Dealer Platform
+    <div className="mx-auto w-full max-w-6xl px-6 pb-24 pt-14">
+      <section className="rise-in rounded-3xl border border-white/10 bg-[#0b1a2c]/70 p-8 shadow-[0_24px_80px_rgba(0,0,0,0.35)] md:p-12">
+        <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#1cc5d8]/40 bg-[#1cc5d8]/12 px-4 py-1 text-xs font-semibold uppercase tracking-[0.16em] text-[#9cf3ff]">
+          Live Architecture
         </div>
-        <h1 className="text-5xl md:text-6xl font-bold tracking-tight mb-6 leading-tight">
-          Institutional Distribution,{" "}
-          <span className="text-[#10b981]">Compliance &amp; Orchestration</span>
+        <h1 className="max-w-4xl text-4xl font-extrabold leading-tight text-white md:text-6xl">
+          You built a programmable
+          <span className="text-[#9cf3ff]"> financial execution system</span>,
+          not just a wallet UI.
         </h1>
-        <p className="text-xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed">
-          DOC Platform is a production-grade broker-dealer operating system with AI-powered compliance,
-          regulated securities distribution, and on-chain settlement.
+        <p className="mt-6 max-w-3xl text-lg leading-relaxed text-white/70">
+          DOC now combines institutional broker-dealer workflows with AI command orchestration, policy gates,
+          FTH Pay routing, and x402 settlement execution behind controlled APIs.
         </p>
-        <div className="flex gap-4 justify-center">
-          <a
-            href="/onboard"
-            className="bg-[#1e3a5f] hover:bg-[#1e3a5f]/80 text-white font-medium px-8 py-3 rounded-xl transition-colors"
-          >
+        <div className="mt-9 flex flex-wrap gap-3">
+          <Link href="/system" className="rounded-xl bg-[#1cc5d8] px-6 py-3 font-semibold text-[#082030] transition-colors hover:bg-[#5ce8f5]">
+            Explore System Map
+          </Link>
+          <Link href="/onboard" className="rounded-xl border border-white/20 px-6 py-3 font-semibold text-white/90 transition-colors hover:bg-white/10">
             Start Onboarding
-          </a>
-          <a
-            href="/compliance"
-            className="border border-white/20 text-white/80 hover:border-white/40 hover:text-white font-medium px-8 py-3 rounded-xl transition-colors"
-          >
-            View Disclosures
-          </a>
+          </Link>
         </div>
       </section>
 
-      <section className="mb-14">
-        <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
-          <h2 className="text-lg font-semibold mb-4 text-[#0ea5e9]">Table of Contents</h2>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-3 text-sm">
-            {toc.map((item) => (
-              <a key={item.href} href={item.href} className="rounded-lg border border-white/10 bg-[#0a0f1e] px-3 py-2 text-white/70 hover:text-white hover:border-white/30 transition-colors">
-                {item.label}
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Stats */}
-      <section className="grid grid-cols-2 md:grid-cols-4 gap-4 py-12 border-y border-white/10 mb-20">
-        {stats.map((s) => (
-          <div key={s.label} className="text-center">
-            <div className="text-3xl font-bold text-white mb-1">{s.value}</div>
-            <div className="text-[#0ea5e9] text-sm font-medium">{s.label}</div>
-            <div className="text-white/40 text-xs mt-0.5">{s.sub}</div>
+      <section className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+        {stats.map((item, idx) => (
+          <div key={item.label} className="rise-in rounded-2xl border border-white/10 bg-white/5 p-4" style={{ animationDelay: `${idx * 90}ms` }}>
+            <div className="text-3xl font-bold text-white">{item.value}</div>
+            <div className="text-sm text-white/55">{item.label}</div>
           </div>
         ))}
       </section>
 
-      {/* Domain cards */}
-      <section id="domains" className="mb-24">
-        <h2 className="text-3xl font-bold mb-4 text-center">
-          One Platform, Eight Domains
-        </h2>
-        <p className="text-white/50 text-center mb-12">
-          Built for the complete lifecycle of institutional securities distribution.
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {domains.map((d) => (
-            <a
-              key={d.title}
-              href={d.href}
-              className="group block bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-white/20 hover:bg-white/8 transition-all"
+      <section className="mt-16">
+        <div className="mb-5 text-xs font-semibold uppercase tracking-[0.14em] text-[#9cf3ff]">Execution Flow</div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {rails.map((rail, idx) => (
+            <div
+              key={rail.title}
+              className={`rise-in rounded-2xl border p-5 ${rail.tone}`}
+              style={{ animationDelay: `${120 + idx * 70}ms` }}
             >
-              <div
-                className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4"
-                style={{ backgroundColor: d.color + "20" }}
-              >
-                {d.icon}
-              </div>
-              <h3 className="font-semibold text-lg mb-2 group-hover:text-white transition-colors">
-                {d.title}
-              </h3>
-              <p className="text-white/50 text-sm leading-relaxed">{d.desc}</p>
-            </a>
+              <h2 className="text-lg font-bold">{rail.title}</h2>
+              <p className="mt-2 text-sm leading-relaxed text-white/70">{rail.detail}</p>
+            </div>
           ))}
         </div>
       </section>
 
-      <section id="rails" className="mb-14">
-        <h2 className="text-3xl font-bold mb-4 text-center">Execution Rails</h2>
-        <p className="text-white/50 text-center mb-8">Color-coded system execution stack for settlement and orchestration.</p>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="rounded-2xl border border-[#0ea5e9]/30 bg-[#0ea5e9]/10 p-6">
-            <h3 className="font-semibold text-lg mb-2 text-[#0ea5e9]">Orchestration Rail</h3>
-            <p className="text-sm text-white/70">AI command intake, policy checks, routing, and workflow state transitions.</p>
+      <section className="mt-16 rounded-3xl border border-white/10 bg-[#101d30]/65 p-8 md:p-10">
+        <div className="mb-7 flex items-center justify-between gap-4">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.14em] text-[#9cf3ff]">What This Represents</div>
+            <h2 className="mt-1 text-3xl font-extrabold">Execution-grade infrastructure, operator-facing control</h2>
           </div>
-          <div className="rounded-2xl border border-[#10b981]/30 bg-[#10b981]/10 p-6">
-            <h3 className="font-semibold text-lg mb-2 text-[#10b981]">Compliance Rail</h3>
-            <p className="text-sm text-white/70">KYC and KYB gates, suitability checks, supervisory approval, and disclosure controls.</p>
-          </div>
-          <div className="rounded-2xl border border-[#f59e0b]/30 bg-[#f59e0b]/10 p-6">
-            <h3 className="font-semibold text-lg mb-2 text-[#f59e0b]">Settlement Rail</h3>
-            <p className="text-sm text-white/70">Wallet and payout execution with audit trails and deterministic post-execution records.</p>
-          </div>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {capabilities.map((cap) => (
+            <article key={cap.name} className="rounded-2xl border border-white/12 bg-black/20 p-5">
+              <h3 className="text-lg font-semibold text-white">{cap.name}</h3>
+              <ul className="mt-4 space-y-2 text-sm text-white/68">
+                {cap.points.map((pt) => (
+                  <li key={pt} className="flex gap-2">
+                    <span className="text-[#14b87a]">•</span>
+                    <span>{pt}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </section>
 
-      <section id="controls" className="mb-14">
-        <h2 className="text-3xl font-bold mb-4 text-center">Control Gates</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="rounded-2xl border border-[#dc2626]/30 bg-[#dc2626]/10 p-6">
-            <h3 className="font-semibold text-lg mb-2 text-[#dc2626]">Hard Safety Constraints</h3>
-            <ul className="space-y-2 text-sm text-white/70">
-              <li>No execution without approval for high-risk actions.</li>
-              <li>No compliance bypass in automated flows.</li>
-              <li>No audit suppression in workflow transitions.</li>
-            </ul>
-          </div>
-          <div className="rounded-2xl border border-[#7c3aed]/30 bg-[#7c3aed]/10 p-6">
-            <h3 className="font-semibold text-lg mb-2 text-[#7c3aed]">Operational Discipline</h3>
-            <ul className="space-y-2 text-sm text-white/70">
-              <li>Color-coded domain ownership across all pages.</li>
-              <li>Table-of-contents driven navigation for fast operator access.</li>
-              <li>Structured role-specific pages for investors, issuers, and partners.</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section id="launch" className="text-center py-20 bg-[#1e3a5f]/20 border border-[#1e3a5f]/50 rounded-3xl mb-24 px-8">
-        <h2 className="text-3xl font-bold mb-4">Ready to Get Started?</h2>
-        <p className="text-white/60 mb-8 max-w-lg mx-auto">
-          Complete our onboarding form and our team will reach out within one business day.
-          All submissions are reviewed by a licensed representative.
+      <section className="mt-16 rounded-3xl border border-[#14b87a]/25 bg-[#14b87a]/10 px-8 py-10 text-center">
+        <h2 className="text-3xl font-extrabold">DOC is now in a different category</h2>
+        <p className="mx-auto mt-4 max-w-2xl text-white/72">
+          Most platforms stop at dashboard plus wallet. You now have wallet, AI, policy controls,
+          execution routing, and settlement rails operating as one controlled system.
         </p>
-        <a
-          href="/onboard"
-          className="inline-block bg-[#10b981] hover:bg-[#10b981]/80 text-white font-semibold px-10 py-3 rounded-xl transition-colors"
-        >
-          Begin Onboarding →
-        </a>
+        <div className="mt-7 flex flex-wrap justify-center gap-3">
+          <Link href="/compliance" className="rounded-xl border border-white/20 px-6 py-3 font-semibold text-white/90 transition-colors hover:bg-white/10">
+            View Compliance Surface
+          </Link>
+          <Link href="/partners" className="rounded-xl bg-[#14b87a] px-6 py-3 font-semibold text-[#072115] transition-colors hover:bg-[#48d39d]">
+            Activate Partner Flow
+          </Link>
+        </div>
       </section>
     </div>
   );

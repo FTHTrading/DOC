@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const sections = [
   {
     id: "toc",
@@ -104,11 +106,11 @@ export default function SystemPage() {
             <h2 className="text-2xl font-semibold mb-4 text-[#7c3aed]">Page Surface Map</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {pages.map((page) => (
-                <a key={page.path} href={page.path} className="rounded-xl border border-white/10 bg-[#0a0f1e] p-4 hover:border-white/30 transition-colors">
+                <Link key={page.path} href={page.path} className="rounded-xl border border-white/10 bg-[#0a0f1e] p-4 hover:border-white/30 transition-colors">
                   <div className="text-sm text-[#0ea5e9] mb-1">{page.path}</div>
                   <div className="font-semibold mb-1">{page.name}</div>
                   <div className="text-xs text-white/60">{page.purpose}</div>
-                </a>
+                </Link>
               ))}
             </div>
           </section>

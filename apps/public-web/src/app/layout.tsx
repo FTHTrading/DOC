@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,51 +16,58 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body className="bg-[#0a0f1e] text-white font-sans antialiased">
-        <nav className="border-b border-white/10 px-6 py-4 flex items-center justify-between sticky top-0 z-50 bg-[#0a0f1e]/95 backdrop-blur">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-[#1e3a5f] rounded-lg flex items-center justify-center">
-              <span className="text-[#0ea5e9] font-bold text-sm">D</span>
-            </div>
-            <span className="font-semibold text-lg tracking-tight">DOC Platform</span>
-          </div>
-          <div className="flex items-center gap-6 text-sm text-white/60">
-            <a href="/" className="hover:text-white transition-colors">Home</a>
-            <a href="/system" className="hover:text-white transition-colors">System</a>
-            <a href="/investors" className="hover:text-white transition-colors">Investors</a>
-            <a href="/issuers" className="hover:text-white transition-colors">Issuers</a>
-            <a href="/partners" className="hover:text-white transition-colors">Partners</a>
-            <a href="/compliance" className="hover:text-white transition-colors">Disclosures</a>
-            <a
+      <body className="text-white antialiased">
+        <nav className="sticky top-0 z-50 border-b border-white/10 bg-[#081121]/85 backdrop-blur-xl">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-4">
+            <Link href="/" className="flex items-center gap-3">
+              <div className="pulse-border flex h-9 w-9 items-center justify-center rounded-lg border border-[#1cc5d8]/30 bg-[#12324b]">
+                <span className="text-sm font-extrabold text-[#1cc5d8]">D</span>
+              </div>
+              <div>
+                <div className="text-base font-semibold tracking-tight">DOC Platform</div>
+                <div className="text-xs text-white/45">Programmable Financial Execution System</div>
+              </div>
+            </Link>
+            <Link
               href="/onboard"
-              className="bg-[#1e3a5f] text-white px-4 py-2 rounded-lg hover:bg-[#1e3a5f]/80 transition-colors"
+              className="rounded-lg border border-[#1cc5d8]/40 bg-[#1cc5d8]/10 px-4 py-2 text-sm font-semibold text-[#93f5ff] transition-colors hover:bg-[#1cc5d8]/20"
             >
-              Get Started
-            </a>
+              Request Access
+            </Link>
+          </div>
+          <div className="overflow-x-auto border-t border-white/5">
+            <div className="mx-auto flex w-full max-w-6xl items-center gap-2 px-6 py-3 text-sm text-white/70">
+              <Link href="/" className="rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white">Home</Link>
+              <Link href="/system" className="rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white">System</Link>
+              <Link href="/investors" className="rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white">Investors</Link>
+              <Link href="/issuers" className="rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white">Issuers</Link>
+              <Link href="/partners" className="rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white">Partners</Link>
+              <Link href="/compliance" className="rounded-md px-3 py-1.5 transition-colors hover:bg-white/10 hover:text-white">Disclosures</Link>
+            </div>
           </div>
         </nav>
         <main>{children}</main>
-        <footer className="border-t border-white/10 px-6 py-12 mt-24">
-          <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-sm text-white/40">
+        <footer className="mt-24 border-t border-white/10 px-6 py-12">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 text-sm text-white/40 md:grid-cols-4">
             <div>
               <div className="text-white font-semibold mb-3">DOC Platform</div>
-              <p>Institutional broker-dealer services. Securities offered through registered representatives.</p>
+              <p>Institutional broker-dealer infrastructure. AI-directed, policy-gated, audit-complete execution.</p>
             </div>
             <div>
               <div className="text-white/70 font-medium mb-3">Platform</div>
               <div className="space-y-2">
-                <a href="/system" className="block hover:text-white transition-colors">System TOC</a>
-                <a href="/investors" className="block hover:text-white transition-colors">For Investors</a>
-                <a href="/issuers" className="block hover:text-white transition-colors">For Issuers</a>
-                <a href="/partners" className="block hover:text-white transition-colors">For Partners</a>
+                <Link href="/system" className="block hover:text-white transition-colors">System TOC</Link>
+                <Link href="/investors" className="block hover:text-white transition-colors">For Investors</Link>
+                <Link href="/issuers" className="block hover:text-white transition-colors">For Issuers</Link>
+                <Link href="/partners" className="block hover:text-white transition-colors">For Partners</Link>
               </div>
             </div>
             <div>
               <div className="text-white/70 font-medium mb-3">Compliance</div>
               <div className="space-y-2">
-                <a href="/compliance" className="block hover:text-white transition-colors">Disclosures</a>
-                <a href="/compliance#crs" className="block hover:text-white transition-colors">Form CRS</a>
-                <a href="/compliance#adv" className="block hover:text-white transition-colors">ADV Part 2</a>
+                <Link href="/compliance" className="block hover:text-white transition-colors">Disclosures</Link>
+                <Link href="/compliance#crs" className="block hover:text-white transition-colors">Form CRS</Link>
+                <Link href="/compliance#adv" className="block hover:text-white transition-colors">ADV Part 2</Link>
               </div>
             </div>
             <div>

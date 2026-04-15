@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function IssuersPage() {
   return (
     <div className="max-w-5xl mx-auto px-6 pt-16 pb-24">
@@ -44,12 +46,12 @@ export default function IssuersPage() {
       </div>
 
       <div className="text-center">
-        <a
+        <Link
           href="/onboard?type=issuer"
           className="inline-block bg-[#f59e0b] hover:bg-[#f59e0b]/80 text-black font-semibold px-10 py-3 rounded-xl transition-colors"
         >
           Apply as an Issuer
-        </a>
+        </Link>
       </div>
     </div>
   );
