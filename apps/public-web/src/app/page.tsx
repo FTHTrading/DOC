@@ -49,17 +49,20 @@ export default function HomePage() {
   const [wallets, setWallets] = useState(124);
   const [approvals, setApprovals] = useState(7);
   const [tasks, setTasks] = useState(3);
+  const [fthPayActivity, setFthPayActivity] = useState(19);
+  const [complianceGates, setComplianceGates] = useState(12);
   const [activity, setActivity] = useState<ActivityItem[]>(initialActivity);
   const [logs, setLogs] = useState<CommandLog[]>(initialLogs);
 
   const stats = useMemo(
     () => [
-      { label: "Active Wallets", value: wallets, tone: "text-[#7bf4c3]" },
+      { label: "Issued Wallets", value: wallets, tone: "text-[#7bf4c3]" },
       { label: "Pending Approvals", value: approvals, tone: "text-[#ffd48a]" },
       { label: "AI Tasks Running", value: tasks, tone: "text-[#9adfff]" },
-      { label: "Recent Activity", value: activity.length, tone: "text-[#ffbab8]" },
+      { label: "FTH Pay Activity", value: fthPayActivity, tone: "text-[#c8b4ff]" },
+      { label: "Compliance Gates", value: complianceGates, tone: "text-[#ffbab8]" },
     ],
-    [wallets, approvals, tasks, activity.length],
+    [wallets, approvals, tasks, fthPayActivity, complianceGates],
   );
 
   const pushActivity = (text: string, level: ActivityItem["level"]) => {
@@ -84,6 +87,8 @@ export default function HomePage() {
 
     if (/send|payment|transfer/i.test(next)) {
       setApprovals((n) => n + 1);
+      setFthPayActivity((n) => n + 1);
+      setComplianceGates((n) => n + 1);
       pushActivity("Payment request created and awaiting approval", "warning");
     }
 
@@ -115,6 +120,7 @@ export default function HomePage() {
 
     if (action === "ai") {
       setTasks((n) => n + 1);
+      setComplianceGates((n) => n + 1);
       pushActivity("AI command started", "info");
       const aiLog: CommandLog = {
         id: crypto.randomUUID(),
@@ -137,6 +143,8 @@ export default function HomePage() {
 
     if (action === "payment") {
       setApprovals((n) => n + 1);
+      setFthPayActivity((n) => n + 1);
+      setComplianceGates((n) => n + 1);
       pushActivity("Payment prepared and awaiting approval", "warning");
       const paymentLog: CommandLog = {
         id: crypto.randomUUID(),
@@ -191,9 +199,36 @@ export default function HomePage() {
             Run
           </button>
         </div>
+
+        <div className="mt-5 grid gap-3 md:grid-cols-3">
+          <a
+            href="https://doc.unykorn.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl border border-[#1cc5d8]/35 bg-[#1cc5d8]/10 px-4 py-3 text-sm font-semibold text-[#9cf3ff] transition hover:bg-[#1cc5d8]/20"
+          >
+            Open Runtime - doc.unykorn.org
+          </a>
+          <a
+            href="https://admin.doc.unykorn.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl border border-[#14b87a]/35 bg-[#14b87a]/10 px-4 py-3 text-sm font-semibold text-[#a6f5d2] transition hover:bg-[#14b87a]/20"
+          >
+            Open Admin - admin.doc.unykorn.org
+          </a>
+          <a
+            href="https://api.doc.unykorn.org"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-xl border border-[#f2b445]/35 bg-[#f2b445]/10 px-4 py-3 text-sm font-semibold text-[#ffe09d] transition hover:bg-[#f2b445]/20"
+          >
+            Open API - api.doc.unykorn.org
+          </a>
+        </div>
       </section>
 
-      <section className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <section className="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-5">
         {stats.map((s) => (
           <article key={s.label} className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-5">
             <div className="text-xs uppercase tracking-[0.14em] text-white/45">{s.label}</div>
@@ -257,7 +292,8 @@ export default function HomePage() {
         </article>
       </section>
 
-      <section className="mt-8 rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-6">
+      <section className="mt-8 grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
+        <article className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-6">
         <h2 className="text-sm uppercase tracking-[0.14em] text-[#9adfff]">AI Panel</h2>
         <div className="mt-4 overflow-x-auto">
           <table className="min-w-full text-left text-sm">
@@ -291,6 +327,31 @@ export default function HomePage() {
             </tbody>
           </table>
         </div>
+        </article>
+
+        <article className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-6">
+          <h2 className="text-sm uppercase tracking-[0.14em] text-[#9adfff]">Suggested Next Actions</h2>
+          <div className="mt-4 space-y-3 text-sm text-white/75">
+            <button
+              onClick={() => setCommand("Issue wallet for new investor profile")}
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-4 py-3 text-left transition hover:bg-white/10"
+            >
+              Queue wallet issuance for investor onboarding
+            </button>
+            <button
+              onClick={() => setCommand("Run compliance check on pending payment approvals")}
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-4 py-3 text-left transition hover:bg-white/10"
+            >
+              Run compliance gate on queued payment approvals
+            </button>
+            <button
+              onClick={() => setCommand("Prepare FTH Pay preview for partner payout")}
+              className="w-full rounded-xl border border-white/15 bg-black/20 px-4 py-3 text-left transition hover:bg-white/10"
+            >
+              Prepare FTH Pay preview for partner payout
+            </button>
+          </div>
+        </article>
       </section>
     </div>
   );

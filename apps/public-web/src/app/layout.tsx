@@ -47,35 +47,19 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
         </nav>
         <main>{children}</main>
-        <footer className="mt-24 border-t border-white/10 px-6 py-12">
-          <div className="mx-auto grid max-w-6xl grid-cols-1 gap-8 text-sm text-white/40 md:grid-cols-4">
+        <footer className="mt-24 border-t border-white/10 px-6 py-10">
+          <div className="mx-auto flex max-w-6xl flex-col items-start justify-between gap-6 text-xs text-white/45 md:flex-row md:items-center">
             <div>
-              <div className="text-white font-semibold mb-3">DOC Platform</div>
-              <p>Institutional broker-dealer infrastructure. AI-directed, policy-gated, audit-complete execution.</p>
-            </div>
-            <div>
-              <div className="text-white/70 font-medium mb-3">Platform</div>
-              <div className="space-y-2">
-                <Link href="/system" className="block hover:text-white transition-colors">System TOC</Link>
-                <Link href="/investors" className="block hover:text-white transition-colors">For Investors</Link>
-                <Link href="/issuers" className="block hover:text-white transition-colors">For Issuers</Link>
-                <Link href="/partners" className="block hover:text-white transition-colors">For Partners</Link>
-              </div>
-            </div>
-            <div>
-              <div className="text-white/70 font-medium mb-3">Compliance</div>
-              <div className="space-y-2">
-                <Link href="/compliance" className="block hover:text-white transition-colors">Disclosures</Link>
-                <Link href="/compliance#crs" className="block hover:text-white transition-colors">Form CRS</Link>
-                <Link href="/compliance#adv" className="block hover:text-white transition-colors">ADV Part 2</Link>
-              </div>
-            </div>
-            <div>
-              <div className="text-white/70 font-medium mb-3">Legal</div>
-              <p className="text-xs leading-relaxed">
-                DOC Platform is a registered broker-dealer. Securities products are not FDIC insured,
+              <div className="text-white/80 font-semibold mb-2">Legal and Disclosures</div>
+              <p className="max-w-3xl leading-relaxed">
+                DOC Platform is a broker-dealer operating surface. Securities products are not FDIC insured,
                 not bank guaranteed, and may lose value. Past performance is not indicative of future results.
               </p>
+            </div>
+            <div className="flex items-center gap-4 text-white/60">
+              <Link href="/compliance" className="hover:text-white transition-colors">Disclosures</Link>
+              <Link href="/compliance#crs" className="hover:text-white transition-colors">Form CRS</Link>
+              <Link href="/compliance#adv" className="hover:text-white transition-colors">ADV Part 2</Link>
             </div>
           </div>
         </footer>
