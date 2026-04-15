@@ -1,0 +1,14 @@
+{
+  "name": "@doc/communications",
+  "version": "1.0.0",
+  "description": "DOC OS — 7-year retained messaging service",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@doc/audit-log": "workspace:*",
+    "@doc/db": "workspace:*",
+    "@doc/domain": "workspace:*"
+  },
+  "devDependencies": { "typescript": "^5.5.0" }
+}

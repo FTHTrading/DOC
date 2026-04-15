@@ -1,0 +1,13 @@
+{
+  "name": "@doc/identity-graph",
+  "version": "1.0.0",
+  "description": "DOC OS — participant relationship graph engine",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@doc/db": "workspace:*",
+    "@doc/domain": "workspace:*"
+  },
+  "devDependencies": { "typescript": "^5.5.0" }
+}

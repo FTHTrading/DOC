@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --navy: #1e3a5f;
+  --emerald: #10b981;
+  --gold: #f59e0b;
+  --btc: #f97316;
+  --purple: #7c3aed;
+  --crimson: #dc2626;
+  --steel: #64748b;
+  --ice: #0ea5e9;
+}
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body { background-color: #0a0f1e; }

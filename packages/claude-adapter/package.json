@@ -1,0 +1,14 @@
+{
+  "name": "@doc/claude-adapter",
+  "version": "1.0.0",
+  "description": "DOC OS — Anthropic Claude SDK adapter with token accounting",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.28.0",
+    "@doc/db": "workspace:*",
+    "@doc/domain": "workspace:*"
+  },
+  "devDependencies": { "typescript": "^5.5.0" }
+}

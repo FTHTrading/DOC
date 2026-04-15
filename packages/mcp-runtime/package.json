@@ -1,0 +1,16 @@
+{
+  "name": "@doc/mcp-runtime",
+  "version": "1.0.0",
+  "description": "DOC OS — MCP agent runner + tool registry",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@doc/audit-log": "workspace:*",
+    "@doc/db": "workspace:*",
+    "@doc/domain": "workspace:*",
+    "@doc/model-router": "workspace:*",
+    "@doc/prompt-registry": "workspace:*"
+  },
+  "devDependencies": { "typescript": "^5.5.0" }
+}

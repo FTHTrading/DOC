@@ -1,0 +1,27 @@
+{
+  "name": "@doc/orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@doc/audit-log": "workspace:*",
+    "@doc/compliance-engine": "workspace:*",
+    "@doc/db": "workspace:*",
+    "@doc/domain": "workspace:*",
+    "@doc/intake-engine": "workspace:*",
+    "@doc/mcp-runtime": "workspace:*",
+    "@doc/orchestrator-core": "workspace:*",
+    "bullmq": "5.x",
+    "ioredis": "5.x"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsx": "^4.15.0",
+    "typescript": "^5.5.0"
+  }
+}

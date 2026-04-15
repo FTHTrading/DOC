@@ -1,0 +1,12 @@
+{
+  "name": "@doc/prompt-registry",
+  "version": "1.0.0",
+  "description": "DOC OS — versioned prompt template registry",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@doc/db": "workspace:*"
+  },
+  "devDependencies": { "typescript": "^5.5.0" }
+}

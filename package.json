@@ -1,0 +1,32 @@
+{
+  "name": "doc-os",
+  "private": true,
+  "description": "DOC OS — Broker-Dealer Distribution, Compliance, and Orchestration Platform",
+  "version": "1.0.0",
+  "packageManager": "pnpm@9.4.0",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "type-check": "turbo type-check",
+    "test": "turbo test",
+    "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
+    "db:generate": "pnpm --filter @doc/db generate",
+    "db:migrate": "pnpm --filter @doc/db migrate",
+    "db:seed": "pnpm --filter @doc/db seed",
+    "db:studio": "pnpm --filter @doc/db studio"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "turbo": "^2.0.6",
+    "typescript": "^5.5.2"
+  }
+}

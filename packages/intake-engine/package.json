@@ -1,0 +1,15 @@
+{
+  "name": "@doc/intake-engine",
+  "version": "1.0.0",
+  "description": "DOC OS — intake classification and routing",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@doc/audit-log": "workspace:*",
+    "@doc/db": "workspace:*",
+    "@doc/domain": "workspace:*",
+    "@doc/mcp-runtime": "workspace:*"
+  },
+  "devDependencies": { "typescript": "^5.5.0" }
+}

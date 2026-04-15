@@ -1,0 +1,16 @@
+{
+  "name": "@doc/orchestrator-core",
+  "version": "1.0.0",
+  "description": "DOC OS — event bus + workflow engine",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@doc/audit-log": "workspace:*",
+    "@doc/db": "workspace:*",
+    "@doc/domain": "workspace:*",
+    "bullmq": "^5.13.0",
+    "ioredis": "^5.4.1"
+  },
+  "devDependencies": { "typescript": "^5.5.0", "@types/node": "^20.0.0" }
+}

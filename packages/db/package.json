@@ -1,0 +1,24 @@
+{
+  "name": "@doc/db",
+  "version": "1.0.0",
+  "description": "DOC OS — Prisma database client + seed",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "generate": "prisma generate",
+    "migrate": "prisma migrate dev",
+    "migrate:prod": "prisma migrate deploy",
+    "seed": "tsx src/seed.ts",
+    "studio": "prisma studio",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.16.0",
+    "decimal.js": "^10.4.3"
+  },
+  "devDependencies": {
+    "prisma": "^5.16.0",
+    "tsx": "^4.16.0",
+    "typescript": "^5.5.0"
+  }
+}

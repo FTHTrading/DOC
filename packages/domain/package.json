@@ -1,0 +1,9 @@
+{
+  "name": "@doc/domain",
+  "version": "1.0.0",
+  "description": "DOC OS — shared TypeScript domain types",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "devDependencies": { "typescript": "^5.5.0" }
+}

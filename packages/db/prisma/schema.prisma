@@ -1,0 +1,1237 @@
+// ─── packages/db/prisma/schema.prisma ────────────────────────────────────────
+// DOC OS — Full Domain Schema
+// PostgreSQL 16 + Prisma 5
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ENUMS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+enum UserRole {
+  super_admin
+  admin
+  compliance
+  supervisor
+  representative
+  operator
+  analyst
+  viewer
+  @@map("user_role")
+}
+
+enum ParticipantType {
+  investor
+  issuer
+  partner
+  broker
+  introducer
+  advisor
+  compliance_reviewer
+  @@map("participant_type")
+}
+
+enum KycStatus {
+  not_started
+  pending_docs
+  under_review
+  escalated
+  approved
+  rejected
+  expired
+  @@map("kyc_status")
+}
+
+enum KybStatus {
+  not_started
+  pending_docs
+  under_review
+  escalated
+  approved
+  rejected
+  expired
+  @@map("kyb_status")
+}
+
+enum AccreditationStatus {
+  not_verified
+  pending
+  verified
+  expired
+  @@map("accreditation_status")
+}
+
+enum SuitabilityStatus {
+  not_assessed
+  pending
+  complete
+  needs_update
+  @@map("suitability_status")
+}
+
+enum SuitabilityRisk {
+  conservative
+  moderately_conservative
+  moderate
+  moderately_aggressive
+  aggressive
+  @@map("suitability_risk")
+}
+
+enum ComplianceGateResult {
+  blocked
+  conditional
+  cleared
+  @@map("compliance_gate_result")
+}
+
+enum ProductType {
+  centrifuge_pool
+  rwa_token
+  btc_access
+  stablecoin
+  private_credit
+  equity_offering
+  fund_interest
+  @@map("product_type")
+}
+
+enum OfferingStatus {
+  draft
+  active
+  paused
+  closed
+  cancelled
+  @@map("offering_status")
+}
+
+enum DealRoomStatus {
+  pending
+  active
+  under_review
+  closed
+  cancelled
+  @@map("deal_room_status")
+}
+
+enum IntakeChannel {
+  web_form
+  email
+  referral_link
+  partner_api
+  manual
+  @@map("intake_channel")
+}
+
+enum IntakeStatus {
+  received
+  classifying
+  routed
+  in_review
+  accepted
+  rejected
+  duplicate
+  @@map("intake_status")
+}
+
+enum IntakeType {
+  investor
+  issuer
+  partner
+  broker
+  inquiry
+  document_upload
+  @@map("intake_type")
+}
+
+enum MessageChannel {
+  direct
+  deal_room
+  intake_thread
+  broadcast
+  system
+  @@map("message_channel")
+}
+
+enum TaskStatus {
+  pending
+  in_progress
+  blocked
+  completed
+  cancelled
+  @@map("task_status")
+}
+
+enum TaskPriority {
+  low
+  medium
+  high
+  urgent
+  @@map("task_priority")
+}
+
+enum ApprovalStatus {
+  pending
+  approved
+  rejected
+  escalated
+  withdrawn
+  @@map("approval_status")
+}
+
+enum ExceptionSeverity {
+  low
+  medium
+  high
+  critical
+  @@map("exception_severity")
+}
+
+enum ExceptionStatus {
+  open
+  under_review
+  resolved
+  escalated
+  closed
+  @@map("exception_status")
+}
+
+enum WorkflowStatus {
+  pending
+  running
+  paused
+  completed
+  failed
+  cancelled
+  @@map("workflow_status")
+}
+
+enum AgentRunStatus {
+  queued
+  running
+  completed
+  failed
+  cancelled
+  requires_approval
+  @@map("agent_run_status")
+}
+
+enum ModelProvider {
+  anthropic
+  openai
+  local
+  @@map("model_provider")
+}
+
+enum CompEventStatus {
+  proposed
+  pending_approval
+  approved
+  rejected
+  paid
+  clawback_initiated
+  @@map("comp_event_status")
+}
+
+enum RelationshipEdgeType {
+  originated_by
+  referred_by
+  introduced_to
+  supervised_by
+  downstream_broker
+  associated_with
+  co_invested
+  @@map("relationship_edge_type")
+}
+
+enum AuditEventType {
+  user_login
+  user_logout
+  record_created
+  record_updated
+  record_deleted
+  approval_requested
+  approval_granted
+  approval_rejected
+  compliance_gate_evaluated
+  compliance_exception_raised
+  intake_received
+  intake_classified
+  intake_routed
+  message_sent
+  document_uploaded
+  agent_run_started
+  agent_run_completed
+  agent_run_failed
+  tool_invoked
+  model_invoked
+  workflow_started
+  workflow_completed
+  workflow_failed
+  payout_proposed
+  payout_approved
+  payout_rejected
+  system_event
+  @@map("audit_event_type")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// IDENTITY & ACCESS — [DEEP NAVY]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Organization {
+  id              String    @id @default(cuid())
+  name            String
+  legalEntityType String?
+  jurisdiction    String?   @default("US")
+  isActive        Boolean   @default(true)
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  users           User[]
+  participants    Participant[]
+  documents       Document[]
+
+  @@map("organizations")
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String
+  role            UserRole  @default(analyst)
+  organizationId  String?
+  isActive        Boolean   @default(true)
+  lastLoginAt     DateTime?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organization    Organization?   @relation(fields: [organizationId], references: [id])
+  representative  Representative?
+  assignedTasks   Task[]          @relation("TaskAssignee")
+  createdTasks    Task[]          @relation("TaskCreator")
+  approvals       ApprovalRequest[] @relation("ApprovalResolver")
+  requestedApprovals ApprovalRequest[] @relation("ApprovalRequester")
+  agentRuns       AgentRun[]
+  modelInvocations ModelInvocation[]
+  auditEvents     AuditEvent[]    @relation("AuditActor")
+
+  @@map("users")
+}
+
+model Representative {
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  crdNumber       String?   @unique
+  namespaceSlug   String    @unique
+  supervisorId    String?
+  isActive        Boolean   @default(true)
+  notes           String?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  user            User              @relation(fields: [userId], references: [id])
+  supervisor      Representative?   @relation("RepSupervision", fields: [supervisorId], references: [id])
+  supervised      Representative[]  @relation("RepSupervision")
+  participants    Participant[]     @relation("OriginRep")
+  compPlans       CompPlan[]
+  supervisoryReviews SupervisoryReview[] @relation("ReviewerRep")
+
+  @@map("representatives")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PARTICIPANTS & RELATIONSHIP GRAPH — [EMERALD]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Participant {
+  id              String          @id @default(cuid())
+  organizationId  String?
+  originRepId     String
+  participantType ParticipantType
+  legalName       String
+  email           String          @unique
+  phone           String?
+  jurisdiction    String?         @default("US")
+  entityType      String?
+  walletAddress   String?
+  walletChain     String?
+  isAccredited    Boolean         @default(false)
+  isEntityKyb     Boolean         @default(false)
+  isActive        Boolean         @default(true)
+  onboardedAt     DateTime?
+  metadata        Json?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  organization    Organization?   @relation(fields: [organizationId], references: [id])
+  originRep       Representative  @relation("OriginRep", fields: [originRepId], references: [id])
+  kycCase         KycCase?
+  kybCase         KybCase?
+  accreditation   AccreditationRecord?
+  suitability     SuitabilityProfile?
+  sanctionsChecks SanctionsCheck[]
+  disclosureAcks  DisclosureAcknowledgment[]
+  formCrsDeliveries FormCRSDelivery[]
+  complianceGates ComplianceGate[]
+  edgesFrom       RelationshipEdge[] @relation("EdgeFrom")
+  edgesTo         RelationshipEdge[] @relation("EdgeTo")
+  intakeSubmissions IntakeSubmission[]
+  dealInvolvements DealParticipant[]
+  productAssignments ProductAssignment[]
+  messagesSent    Message[]       @relation("MessageSender")
+  tasks           Task[]          @relation("TaskParticipant")
+  compEventsBeneficiary CompEvent[] @relation("CompBeneficiary")
+
+  @@map("participants")
+}
+
+model RelationshipEdge {
+  id                String               @id @default(cuid())
+  fromParticipantId String
+  toParticipantId   String
+  edgeType          RelationshipEdgeType
+  originRepId       String
+  strengthScore     Int?                 // 0-100
+  offchainEdgeId    String?
+  isActive          Boolean              @default(true)
+  metadata          Json?
+  createdAt         DateTime             @default(now())
+
+  fromParticipant   Participant @relation("EdgeFrom", fields: [fromParticipantId], references: [id])
+  toParticipant     Participant @relation("EdgeTo", fields: [toParticipantId], references: [id])
+
+  @@unique([fromParticipantId, toParticipantId, edgeType])
+  @@map("relationship_edges")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPLIANCE LAYER — [CRIMSON]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model KycCase {
+  id              String    @id @default(cuid())
+  participantId   String    @unique
+  status          KycStatus @default(not_started)
+  provider        String?
+  externalCaseId  String?
+  riskScore       Int?
+  documentsJson   Json?
+  reviewedById    String?
+  reviewedAt      DateTime?
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+  expiresAt       DateTime?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  participant     Participant @relation(fields: [participantId], references: [id])
+
+  @@map("kyc_cases")
+}
+
+model KybCase {
+  id              String    @id @default(cuid())
+  participantId   String    @unique
+  status          KybStatus @default(not_started)
+  entityName      String
+  ein             String?
+  incorporationState String?
+  provider        String?
+  externalCaseId  String?
+  documentsJson   Json?
+  reviewedById    String?
+  approvedAt      DateTime?
+  rejectedAt      DateTime?
+  rejectionReason String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  participant     Participant @relation(fields: [participantId], references: [id])
+
+  @@map("kyb_cases")
+}
+
+model SanctionsCheck {
+  id            String   @id @default(cuid())
+  participantId String
+  provider      String
+  result        String   // clear | hit | potential_hit | error
+  hitDetails    Json?
+  screenedAt    DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  participant   Participant @relation(fields: [participantId], references: [id])
+
+  @@map("sanctions_checks")
+}
+
+model AccreditationRecord {
+  id                String              @id @default(cuid())
+  participantId     String              @unique
+  status            AccreditationStatus @default(not_verified)
+  accreditationType String?
+  verifiedAt        DateTime?
+  expiresAt         DateTime?
+  documentRef       String?
+  verifiedById      String?
+  notes             String?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id])
+
+  @@map("accreditation_records")
+}
+
+model SuitabilityProfile {
+  id                String            @id @default(cuid())
+  participantId     String            @unique
+  status            SuitabilityStatus @default(not_assessed)
+  riskTolerance     SuitabilityRisk?
+  investmentHorizon String?
+  liquidityNeeds    String?
+  netWorthBracket   String?
+  annualIncomeBracket String?
+  investmentObjectives String[]
+  assessedAt        DateTime?
+  expiresAt         DateTime?
+  assessedById      String?
+  notes             String?
+  metadata          Json?
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  participant       Participant @relation(fields: [participantId], references: [id])
+
+  @@map("suitability_profiles")
+}
+
+model DisclosureAcknowledgment {
+  id              String    @id @default(cuid())
+  participantId   String
+  disclosureType  String    // reg_bi | form_crs | comp_disclosure | conflict_disclosure
+  acknowledgedAt  DateTime  @default(now())
+  ipAddress       String?
+  documentRef     String?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+
+  participant     Participant @relation(fields: [participantId], references: [id])
+
+  @@map("disclosure_acknowledgments")
+}
+
+model FormCRSDelivery {
+  id              String    @id @default(cuid())
+  participantId   String
+  deliveredAt     DateTime  @default(now())
+  versionRef      String
+  deliveryMethod  String    // email | portal | in_person
+  acknowledgedAt  DateTime?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+
+  participant     Participant @relation(fields: [participantId], references: [id])
+
+  @@map("form_crs_deliveries")
+}
+
+model ComplianceGate {
+  id                  String               @id @default(cuid())
+  participantId       String
+  evaluatedAt         DateTime             @default(now())
+  result              ComplianceGateResult
+  kycStatus           KycStatus
+  kybStatus           KybStatus?
+  accreditationStatus AccreditationStatus
+  suitabilityStatus   SuitabilityStatus
+  sanctionsClear      Boolean
+  disclosuresComplete Boolean
+  blockingReasons     String[]
+  conditionalReasons  String[]
+  evaluatedById       String?
+  metadata            Json?
+  createdAt           DateTime             @default(now())
+
+  participant         Participant @relation(fields: [participantId], references: [id])
+
+  @@map("compliance_gates")
+}
+
+model ApprovalRequest {
+  id              String         @id @default(cuid())
+  requestType     String         // subscription | redemption | product_access | payout | exception_override | comp_event
+  targetId        String
+  summary         String
+  status          ApprovalStatus @default(pending)
+  requestedById   String?
+  resolvedById    String?
+  resolvedAt      DateTime?
+  resolutionNotes String?
+  organizationId  String?
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  requester       User? @relation("ApprovalRequester", fields: [requestedById], references: [id])
+  resolver        User? @relation("ApprovalResolver", fields: [resolvedById], references: [id])
+
+  @@map("approval_requests")
+}
+
+model ExceptionFlag {
+  id              String            @id @default(cuid())
+  participantId   String?
+  targetType      String
+  targetId        String
+  severity        ExceptionSeverity
+  status          ExceptionStatus   @default(open)
+  flagType        String
+  description     String
+  raisedById      String?
+  resolvedById    String?
+  resolvedAt      DateTime?
+  resolutionNotes String?
+  metadata        Json?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  supervisoryReview SupervisoryReview?
+
+  @@map("exception_flags")
+}
+
+model SupervisoryReview {
+  id              String    @id @default(cuid())
+  reviewerId      String
+  subjectType     String
+  subjectId       String
+  exceptionFlagId String?   @unique
+  reviewNotes     String?
+  reviewedAt      DateTime  @default(now())
+  outcome         String    // approved | escalated | exception_noted | remediated
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+
+  reviewer        Representative    @relation("ReviewerRep", fields: [reviewerId], references: [id])
+  exceptionFlag   ExceptionFlag?    @relation(fields: [exceptionFlagId], references: [id])
+
+  @@map("supervisory_reviews")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// PRODUCTS & DEAL ROOMS — [GOLD]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Product {
+  id              String      @id @default(cuid())
+  productType     ProductType
+  name            String
+  ticker          String?
+  description     String?
+  minimumInvestment Decimal?  @db.Decimal(36, 8)
+  currency        String      @default("USD")
+  isActive        Boolean     @default(true)
+  isAccreditedOnly Boolean    @default(false)
+  metadata        Json?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  offerings       Offering[]
+  assignments     ProductAssignment[]
+
+  @@map("products")
+}
+
+model Offering {
+  id              String        @id @default(cuid())
+  productId       String
+  name            String
+  description     String?
+  status          OfferingStatus @default(draft)
+  targetRaise     Decimal?      @db.Decimal(36, 8)
+  raisedAmount    Decimal?      @db.Decimal(36, 8)
+  currency        String        @default("USD")
+  openDate        DateTime?
+  closeDate       DateTime?
+  isAccreditedOnly Boolean      @default(true)
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  product         Product @relation(fields: [productId], references: [id])
+  dealRooms       DealRoom[]
+
+  @@map("offerings")
+}
+
+model ProductAssignment {
+  id              String    @id @default(cuid())
+  participantId   String
+  productId       String
+  assignedById    String?
+  assignedAt      DateTime  @default(now())
+  notes           String?
+  metadata        Json?
+
+  participant     Participant @relation(fields: [participantId], references: [id])
+  product         Product     @relation(fields: [productId], references: [id])
+
+  @@unique([participantId, productId])
+  @@map("product_assignments")
+}
+
+model DealRoom {
+  id              String         @id @default(cuid())
+  offeringId      String?
+  name            String
+  description     String?
+  status          DealRoomStatus @default(pending)
+  createdById     String?
+  closedAt        DateTime?
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  offering        Offering? @relation(fields: [offeringId], references: [id])
+  participants    DealParticipant[]
+  documents       DealDocument[]
+  messages        Message[]
+
+  @@map("deal_rooms")
+}
+
+model DealParticipant {
+  id              String    @id @default(cuid())
+  dealRoomId      String
+  participantId   String
+  role            String    // investor | issuer | advisor | rep
+  addedAt         DateTime  @default(now())
+  metadata        Json?
+
+  dealRoom        DealRoom    @relation(fields: [dealRoomId], references: [id])
+  participant     Participant @relation(fields: [participantId], references: [id])
+
+  @@unique([dealRoomId, participantId])
+  @@map("deal_participants")
+}
+
+model DealDocument {
+  id              String    @id @default(cuid())
+  dealRoomId      String
+  documentId      String
+  addedAt         DateTime  @default(now())
+  metadata        Json?
+
+  dealRoom        DealRoom  @relation(fields: [dealRoomId], references: [id])
+  document        Document  @relation(fields: [documentId], references: [id])
+
+  @@map("deal_documents")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// INTAKE ENGINE — [STEEL GRAY]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model IntakeSubmission {
+  id              String       @id @default(cuid())
+  channel         IntakeChannel
+  intakeType      IntakeType
+  status          IntakeStatus @default(received)
+  participantId   String?
+  submittedByEmail String?
+  submittedByName  String?
+  rawData         Json
+  classifiedAt    DateTime?
+  classificationJson Json?
+  routedAt        DateTime?
+  routedToRepId   String?
+  routedToUserId  String?
+  reviewedAt      DateTime?
+  reviewedById    String?
+  notes           String?
+  ipAddress       String?
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  participant     Participant? @relation(fields: [participantId], references: [id])
+  documents       IntakeDocument[]
+  tasks           Task[]
+
+  @@map("intake_submissions")
+}
+
+model IntakeDocument {
+  id              String    @id @default(cuid())
+  intakeId        String
+  documentId      String
+  createdAt       DateTime  @default(now())
+
+  intake          IntakeSubmission @relation(fields: [intakeId], references: [id])
+  document        Document        @relation(fields: [documentId], references: [id])
+
+  @@map("intake_documents")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMMUNICATIONS — [STEEL GRAY]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model CommunicationChannel {
+  id                  String         @id @default(cuid())
+  name                String
+  channelType         MessageChannel
+  isRetained          Boolean        @default(true)
+  retentionExpiresAt  DateTime?
+  isOffPlatform       Boolean        @default(false)
+  offPlatformNote     String?
+  participantIds      String[]
+  dealRoomId          String?
+  isActive            Boolean        @default(true)
+  metadata            Json?
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+
+  messages            Message[]
+
+  @@map("communication_channels")
+}
+
+model Message {
+  id              String    @id @default(cuid())
+  channelId       String?
+  dealRoomId      String?
+  senderId        String
+  recipientIds    String[]
+  subject         String?
+  body            String
+  isInternal      Boolean   @default(false)
+  isOffPlatform   Boolean   @default(false)
+  retainedUntil   DateTime?
+  eDiscoveryTag   String?
+  attachmentIds   String[]
+  metadata        Json?
+  sentAt          DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  channel         CommunicationChannel? @relation(fields: [channelId], references: [id])
+  dealRoom        DealRoom?             @relation(fields: [dealRoomId], references: [id])
+  sender          Participant           @relation("MessageSender", fields: [senderId], references: [id])
+  tasks           Task[]
+
+  @@map("messages")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// DOCUMENTS — [STEEL GRAY]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Document {
+  id              String    @id @default(cuid())
+  organizationId  String?
+  name            String
+  mimeType        String
+  sizeBytes       Int?
+  s3Key           String    @unique
+  s3Bucket        String
+  checksum        String?
+  uploadedById    String?
+  isProcessed     Boolean   @default(false)
+  processedAt     DateTime?
+  extractedText   String?
+  retainedUntil   DateTime?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  organization    Organization? @relation(fields: [organizationId], references: [id])
+  dealDocuments   DealDocument[]
+  intakeDocuments IntakeDocument[]
+
+  @@map("documents")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// TASKS — [DEEP NAVY]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model Task {
+  id              String       @id @default(cuid())
+  title           String
+  description     String?
+  status          TaskStatus   @default(pending)
+  priority        TaskPriority @default(medium)
+  assigneeId      String?
+  createdById     String?
+  participantId   String?
+  intakeId        String?
+  messageId       String?
+  workflowRunId   String?
+  dueAt           DateTime?
+  completedAt     DateTime?
+  notes           String?
+  metadata        Json?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  assignee        User?           @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  creator         User?           @relation("TaskCreator", fields: [createdById], references: [id])
+  participant     Participant?    @relation("TaskParticipant", fields: [participantId], references: [id])
+  intake          IntakeSubmission? @relation(fields: [intakeId], references: [id])
+  message         Message?        @relation(fields: [messageId], references: [id])
+  workflowRun     WorkflowRun?    @relation(fields: [workflowRunId], references: [id])
+
+  @@map("tasks")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ORCHESTRATION — [ROYAL PURPLE]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model WorkflowRun {
+  id              String         @id @default(cuid())
+  workflowType    String
+  status          WorkflowStatus @default(pending)
+  triggerType     String         // intake | compliance | message | manual | schedule
+  triggerId       String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  failedAt        DateTime?
+  errorMessage    String?
+  inputJson       Json?
+  outputJson      Json?
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  steps           WorkflowStep[]
+  tasks           Task[]
+  agentRuns       AgentRun[]
+
+  @@map("workflow_runs")
+}
+
+model WorkflowStep {
+  id              String    @id @default(cuid())
+  workflowRunId   String
+  stepName        String
+  stepOrder       Int
+  status          WorkflowStatus @default(pending)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  inputJson       Json?
+  outputJson      Json?
+  errorMessage    String?
+  createdAt       DateTime  @default(now())
+
+  workflowRun     WorkflowRun @relation(fields: [workflowRunId], references: [id])
+
+  @@map("workflow_steps")
+}
+
+model OrchestratorEvent {
+  id              String    @id @default(cuid())
+  eventType       String
+  sourceService   String
+  payload         Json
+  processedAt     DateTime?
+  workflowRunId   String?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+
+  @@map("orchestrator_events")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// MCP / AI LAYER — [ROYAL PURPLE]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model AgentDefinition {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  purpose         String
+  allowedTools    String[]
+  forbiddenActions String[]
+  systemPrompt    String?
+  outputSchema    Json?
+  escalationRules Json?
+  isActive        Boolean   @default(true)
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  runs            AgentRun[]
+
+  @@map("agent_definitions")
+}
+
+model AgentRun {
+  id              String         @id @default(cuid())
+  agentDefinitionId String
+  workflowRunId   String?
+  triggeredById   String?
+  status          AgentRunStatus @default(queued)
+  inputJson       Json
+  outputJson      Json?
+  errorMessage    String?
+  requiresApproval Boolean       @default(false)
+  approvalId      String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  tokenCount      Int?
+  latencyMs       Int?
+  metadata        Json?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  agentDefinition AgentDefinition @relation(fields: [agentDefinitionId], references: [id])
+  workflowRun     WorkflowRun?    @relation(fields: [workflowRunId], references: [id])
+  triggeredBy     User?           @relation(fields: [triggeredById], references: [id])
+  toolInvocations ToolInvocation[]
+  modelInvocations ModelInvocation[]
+
+  @@map("agent_runs")
+}
+
+model ToolDefinition {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  description     String
+  inputSchema     Json
+  outputSchema    Json?
+  requiresApproval Boolean  @default(false)
+  isActive        Boolean   @default(true)
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  invocations     ToolInvocation[]
+
+  @@map("tool_definitions")
+}
+
+model ToolInvocation {
+  id              String    @id @default(cuid())
+  agentRunId      String
+  toolDefinitionId String
+  inputJson       Json
+  outputJson      Json?
+  success         Boolean   @default(false)
+  errorMessage    String?
+  latencyMs       Int?
+  createdAt       DateTime  @default(now())
+
+  agentRun        AgentRun       @relation(fields: [agentRunId], references: [id])
+  toolDefinition  ToolDefinition @relation(fields: [toolDefinitionId], references: [id])
+
+  @@map("tool_invocations")
+}
+
+model PromptTemplate {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  agentSlug       String?
+  systemMessage   String
+  userTemplate    String
+  version         Int       @default(1)
+  isActive        Boolean   @default(true)
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  modelInvocations ModelInvocation[]
+
+  @@map("prompt_templates")
+}
+
+model ModelInvocation {
+  id              String        @id @default(cuid())
+  agentRunId      String?
+  promptTemplateId String?
+  invokedById     String?
+  provider        ModelProvider
+  model           String
+  systemMessage   String?
+  userMessage     String
+  completion      String?
+  inputTokens     Int?
+  outputTokens    Int?
+  latencyMs       Int?
+  success         Boolean       @default(false)
+  errorMessage    String?
+  metadata        Json?
+  createdAt       DateTime      @default(now())
+
+  agentRun        AgentRun?      @relation(fields: [agentRunId], references: [id])
+  promptTemplate  PromptTemplate? @relation(fields: [promptTemplateId], references: [id])
+  invokedBy       User?          @relation(fields: [invokedById], references: [id])
+
+  @@map("model_invocations")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMPENSATION — [GOLD]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model CompPlan {
+  id              String    @id @default(cuid())
+  repId           String
+  name            String
+  effectiveDate   DateTime
+  expiresAt       DateTime?
+  isActive        Boolean   @default(true)
+  approvedById    String?
+  approvedAt      DateTime?
+  notes           String?
+  metadata        Json?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  rep             Representative @relation(fields: [repId], references: [id])
+  rules           CompRule[]
+
+  @@map("comp_plans")
+}
+
+model CompRule {
+  id                  String   @id @default(cuid())
+  planId              String
+  productType         String
+  grossRatePct        Decimal  @db.Decimal(8, 6)
+  holdbackPct         Decimal  @db.Decimal(8, 6) @default(0.000000)
+  clawbackPeriodDays  Int      @default(365)
+  notes               String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  plan                CompPlan   @relation(fields: [planId], references: [id])
+  compEvents          CompEvent[]
+
+  @@map("comp_rules")
+}
+
+model CompEvent {
+  id              String          @id @default(cuid())
+  transactionRef  String
+  transactionType String
+  beneficiaryId   String
+  proposedById    String
+  planId          String?
+  ruleId          String?
+  grossAmount     Decimal         @db.Decimal(36, 8)
+  proposedAmount  Decimal         @db.Decimal(36, 8)
+  currency        String          @default("USD")
+  status          CompEventStatus @default(proposed)
+  basisJson       Json
+  proposedAt      DateTime        @default(now())
+  reviewedById    String?
+  reviewedAt      DateTime?
+  reviewNotes     String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  beneficiary     Participant       @relation("CompBeneficiary", fields: [beneficiaryId], references: [id])
+  rule            CompRule?         @relation(fields: [ruleId], references: [id])
+  approvedEvent   ApprovedCompEvent?
+
+  @@map("comp_events")
+}
+
+model ApprovedCompEvent {
+  id              String   @id @default(cuid())
+  compEventId     String   @unique
+  approvedById    String
+  approvedAt      DateTime @default(now())
+  payoutAmount    Decimal  @db.Decimal(36, 8)
+  currency        String   @default("USD")
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  compEvent       CompEvent @relation(fields: [compEventId], references: [id])
+  payout          Payout?
+
+  @@map("approved_comp_events")
+}
+
+model Payout {
+  id              String   @id @default(cuid())
+  approvedEventId String   @unique
+  paidAt          DateTime?
+  txRef           String?
+  chain           String?
+  status          String   @default("pending")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  approvedEvent   ApprovedCompEvent @relation(fields: [approvedEventId], references: [id])
+  clawbacks       Clawback[]
+
+  @@map("payouts")
+}
+
+model Clawback {
+  id              String   @id @default(cuid())
+  payoutId        String
+  reason          String
+  amount          Decimal  @db.Decimal(36, 8)
+  currency        String   @default("USD")
+  initiatedById   String
+  approvedById    String?
+  initiatedAt     DateTime @default(now())
+  approvedAt      DateTime?
+  completedAt     DateTime?
+  status          String   @default("initiated")
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  payout          Payout @relation(fields: [payoutId], references: [id])
+
+  @@map("clawbacks")
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// AUDIT — [DEEP NAVY]
+// ═══════════════════════════════════════════════════════════════════════════════
+
+model AuditEvent {
+  id              String         @id @default(cuid())
+  eventType       AuditEventType
+  actorId         String?
+  actorEmail      String?
+  targetType      String
+  targetId        String
+  summary         String
+  metadata        Json?
+  ipAddress       String?
+  userAgent       String?
+  organizationId  String?
+  createdAt       DateTime       @default(now())
+
+  actor           User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([eventType])
+  @@index([targetType, targetId])
+  @@index([actorId])
+  @@index([createdAt])
+  @@map("audit_events")
+}

@@ -1,0 +1,13 @@
+{
+  "name": "@doc/model-router",
+  "version": "1.0.0",
+  "description": "DOC OS — multi-provider model router abstraction",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": { "type-check": "tsc --noEmit" },
+  "dependencies": {
+    "@doc/claude-adapter": "workspace:*",
+    "@doc/domain": "workspace:*"
+  },
+  "devDependencies": { "typescript": "^5.5.0" }
+}
