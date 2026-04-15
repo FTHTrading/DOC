@@ -108,6 +108,9 @@ importers:
       '@doc/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@doc/x402-router':
+        specifier: workspace:*
+        version: link:../../packages/x402-router
       '@fastify/cors':
         specifier: ^9.0.1
         version: 9.0.1
@@ -520,6 +523,15 @@ importers:
       typescript:
         specifier: ^5.5.0
         version: 5.9.3
+
+  packages/x402-router:
+    dependencies:
+      '@doc/audit-log':
+        specifier: workspace:*
+        version: link:../audit-log
+      '@doc/domain':
+        specifier: workspace:*
+        version: link:../domain
 
 packages:
 
