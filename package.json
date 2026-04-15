@@ -17,8 +17,10 @@
     "clean": "turbo clean && find . -name 'node_modules' -type d -prune -exec rm -rf '{}' +",
     "db:generate": "pnpm --filter @doc/db generate",
     "db:migrate": "pnpm --filter @doc/db migrate",
+    "db:push": "pnpm --filter @doc/db push",
     "db:seed": "pnpm --filter @doc/db seed",
-    "db:studio": "pnpm --filter @doc/db studio"
+    "db:studio": "pnpm --filter @doc/db studio",
+    "validate:local": "node test-local.js"
   },
   "workspaces": [
     "apps/*",
