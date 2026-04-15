@@ -59,7 +59,36 @@ URLs:
 
 ## Test Flow (Complete End-to-End)
 
-### 1️⃣ Intake Submission
+### Automated Test (Recommended)
+
+```bash
+# After docker compose + pnpm install + pnpm db:push + pnpm db:seed
+pnpm validate:local
+```
+
+This runs 6 automated tests:
+1. ✓ API health check
+2. ✓ Intake submission acceptance
+3. ✓ Intake appears in queue
+4. ✓ Database connectivity
+5. ✓ Audit log accessible
+6. ✓ Workflow processed
+
+Expected output:
+```
+✅ All tests passed!
+
+Next steps:
+1. Open http://localhost:3001 (admin dashboard)
+2. Navigate to /intake page
+3. Verify your test submission appears
+4. Open Prisma Studio: pnpm db:studio
+5. Check AuditEvent table for classification logs
+```
+
+### Manual Walkthrough (If Preferred)
+
+#### 1️⃣ Intake Submission
 ```
 Browser → http://localhost:3000/onboard
 → Fill form (type: Investor)
@@ -67,14 +96,14 @@ Browser → http://localhost:3000/onboard
 → See success message
 ```
 
-### 2️⃣ Check Admin
+#### 2️⃣ Check Admin
 ```
 Browser → http://localhost:3001/intake
 → See new submission appear
 → Status: "classified"
 ```
 
-### 3️⃣ Create Participant
+#### 3️⃣ Create Participant
 ```
 Admin → /participants
 → "+ Create Participant"
@@ -82,7 +111,7 @@ Admin → /participants
 → Submit
 ```
 
-### 4️⃣ Run Compliance Gate
+#### 4️⃣ Run Compliance Gate
 ```
 Admin → /compliance
 → Find participant
@@ -90,7 +119,7 @@ Admin → /compliance
 → Wait for result
 ```
 
-### 5️⃣ Check Audit Log
+#### 5️⃣ Check Audit Log
 ```
 Prisma Studio → http://localhost:5555
 → AuditEvent table
