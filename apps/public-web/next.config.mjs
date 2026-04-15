@@ -1,8 +1,11 @@
 const nextConfig = {
   reactStrictMode: true,
   transpilePackages: ["@doc/ui", "@doc/domain"],
-  // Static export for GitHub Pages
-  ...(process.env.NEXT_OUTPUT_EXPORT === 'true' && { output: 'export' }),
+  // Static export for GitHub Pages (with basePath for repo-level deployment)
+  ...(process.env.NEXT_OUTPUT_EXPORT === 'true' && { 
+    output: 'export',
+    basePath: '/DOC',
+  }),
   async headers() {
     return [
       {
