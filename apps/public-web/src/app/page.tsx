@@ -1,358 +1,314 @@
-"use client";
+export default function DocOSPublicSite() {
+  type ActivityTone = "emerald" | "amber" | "blue" | "purple";
 
-import { useMemo, useState } from "react";
+  const stats = [
+    { label: "Issued Wallets", value: "128", sub: "internal network" },
+    { label: "Pending Approvals", value: "07", sub: "requires review" },
+    { label: "AI Directives", value: "19", sub: "running now" },
+    { label: "FTH Pay Routed", value: "$4.2M", sub: "30d volume" },
+  ];
 
-type ActivityItem = {
-  id: string;
-  text: string;
-  level: "info" | "success" | "warning";
-  at: string;
-};
+  const actions = [
+    { title: "Issue Wallet", sub: "create internal participant wallet" },
+    { title: "Run AI Directive", sub: "route command into orchestration" },
+    { title: "Start Onboarding", sub: "investor / issuer / broker" },
+    { title: "Send Payment", sub: "FTH Pay -> x402 execution" },
+    { title: "Open Deal Room", sub: "controlled distribution workspace" },
+    { title: "Review Approvals", sub: "compliance and settlement gates" },
+  ];
 
-type CommandLog = {
-  id: string;
-  command: string;
-  status: "queued" | "executed";
-  output: string;
-  at: string;
-};
+  const activity: Array<{ time: string; title: string; meta: string; tone: ActivityTone }> = [
+    { time: "09:42", title: "Investor wallet issued", meta: "Meridian Capital - Internal Only", tone: "emerald" },
+    { time: "09:35", title: "Payment awaiting approval", meta: "$25,000 - FTH Pay -> x402", tone: "amber" },
+    { time: "09:26", title: "Compliance review completed", meta: "Issuer onboarding packet cleared", tone: "blue" },
+    { time: "09:11", title: "AI executed intake classification", meta: "3 new counterparties routed", tone: "purple" },
+  ];
 
-function nowTime() {
-  return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
+  const rails = [
+    {
+      title: "Centrifuge Treasuries",
+      tag: "RWA / T-Bills",
+      desc: "Institutional treasury and real-world asset rails with subscription, allocation, and reporting paths.",
+      href: "https://doc.unykorn.org",
+    },
+    {
+      title: "Aave Liquidity",
+      tag: "DeFi / Lending",
+      desc: "On-chain lending, collateralized borrowing, and yield routing integrated into treasury workflows.",
+      href: "https://doc.unykorn.org",
+    },
+    {
+      title: "Bitcoin Access",
+      tag: "BTC / Treasury",
+      desc: "Direct BTC policy-gated exposure, reserve visibility, wallet routing, and payment-triggered execution.",
+      href: "https://doc.unykorn.org",
+    },
+    {
+      title: "XRPL Settlement",
+      tag: "XRPL",
+      desc: "Fast issuance, trust-line aware transfers, deterministic audit state, and controlled operator movement.",
+      href: "https://api.doc.unykorn.org",
+    },
+    {
+      title: "Bond / Fixed Income",
+      tag: "Debt / Structured",
+      desc: "Broker-dealer distribution surfaces for bonds, fixed income programs, and controlled internal onboarding.",
+      href: "https://admin.doc.unykorn.org",
+    },
+  ];
 
-const initialActivity: ActivityItem[] = [
-  { id: "a1", text: "Investor onboarded", level: "success", at: nowTime() },
-  { id: "a2", text: "Payment pending approval", level: "warning", at: nowTime() },
-  { id: "a3", text: "AI executed compliance check", level: "info", at: nowTime() },
-];
+  const systemLinks = [
+    { title: "Treasuries", sub: "Centrifuge / RWA", href: "https://doc.unykorn.org" },
+    { title: "Aave", sub: "Liquidity Routing", href: "https://doc.unykorn.org" },
+    { title: "Bitcoin", sub: "Reserve Controls", href: "https://doc.unykorn.org" },
+    { title: "XRPL", sub: "Settlement Paths", href: "https://api.doc.unykorn.org" },
+  ];
 
-const initialLogs: CommandLog[] = [
-  {
-    id: "c1",
-    command: "Send 25000 to investor wallet",
-    status: "executed",
-    output: "Created payment request and routed to approval queue.",
-    at: nowTime(),
-  },
-  {
-    id: "c2",
-    command: "Preview payout to partner account",
-    status: "executed",
-    output: "Preview generated with controls: approval_required, compliance_clearance_required.",
-    at: nowTime(),
-  },
-];
+  const commandExamples = [
+    "Issue 2 investor wallets and preload onboarding.",
+    "Prepare a $250k treasury movement for approval.",
+    "Open a broker-dealer deal room and route disclosures.",
+    "Summarize pending compliance exceptions and next actions.",
+  ];
 
-export default function HomePage() {
-  const [command, setCommand] = useState("");
-  const [wallets, setWallets] = useState(124);
-  const [approvals, setApprovals] = useState(7);
-  const [tasks, setTasks] = useState(3);
-  const [fthPayActivity, setFthPayActivity] = useState(19);
-  const [complianceGates, setComplianceGates] = useState(12);
-  const [activity, setActivity] = useState<ActivityItem[]>(initialActivity);
-  const [logs, setLogs] = useState<CommandLog[]>(initialLogs);
-
-  const stats = useMemo(
-    () => [
-      { label: "Issued Wallets", value: wallets, tone: "text-[#7bf4c3]" },
-      { label: "Pending Approvals", value: approvals, tone: "text-[#ffd48a]" },
-      { label: "AI Tasks Running", value: tasks, tone: "text-[#9adfff]" },
-      { label: "FTH Pay Activity", value: fthPayActivity, tone: "text-[#c8b4ff]" },
-      { label: "Compliance Gates", value: complianceGates, tone: "text-[#ffbab8]" },
-    ],
-    [wallets, approvals, tasks, fthPayActivity, complianceGates],
-  );
-
-  const pushActivity = (text: string, level: ActivityItem["level"]) => {
-    setActivity((prev) => [{ id: crypto.randomUUID(), text, level, at: nowTime() }, ...prev].slice(0, 8));
-  };
-
-  const runCommand = () => {
-    const next = command.trim();
-    if (!next) return;
-
-    const log: CommandLog = {
-      id: crypto.randomUUID(),
-      command: next,
-      status: "executed",
-      output: "Intent parsed. Policy checks passed. Added to supervised execution queue.",
-      at: nowTime(),
-    };
-
-    setLogs((prev) => [log, ...prev].slice(0, 8));
-    pushActivity(`Command executed: ${next}`, "info");
-    setTasks((n) => Math.max(1, n + 1));
-
-    if (/send|payment|transfer/i.test(next)) {
-      setApprovals((n) => n + 1);
-      setFthPayActivity((n) => n + 1);
-      setComplianceGates((n) => n + 1);
-      pushActivity("Payment request created and awaiting approval", "warning");
-    }
-
-    if (/wallet|issue/i.test(next)) {
-      setWallets((n) => n + 1);
-      pushActivity("Wallet issued under controlled execution policy", "success");
-    }
-
-    setCommand("");
-  };
-
-  const quickAction = (action: "wallet" | "ai" | "onboard" | "payment" | "deal") => {
-    if (action === "wallet") {
-      setWallets((n) => n + 1);
-      pushActivity("Wallet issued", "success");
-      const walletLog: CommandLog = {
-        id: crypto.randomUUID(),
-        command: "Issue wallet",
-        status: "executed",
-        output: "Wallet created and bound to controlled policy mode.",
-        at: nowTime(),
-      };
-      setLogs((prev) => [
-        walletLog,
-        ...prev,
-      ].slice(0, 8));
-      return;
-    }
-
-    if (action === "ai") {
-      setTasks((n) => n + 1);
-      setComplianceGates((n) => n + 1);
-      pushActivity("AI command started", "info");
-      const aiLog: CommandLog = {
-        id: crypto.randomUUID(),
-        command: "Run AI command",
-        status: "queued",
-        output: "Queued for supervised execution.",
-        at: nowTime(),
-      };
-      setLogs((prev) => [
-        aiLog,
-        ...prev,
-      ].slice(0, 8));
-      return;
-    }
-
-    if (action === "onboard") {
-      pushActivity("Onboarding flow opened", "info");
-      return;
-    }
-
-    if (action === "payment") {
-      setApprovals((n) => n + 1);
-      setFthPayActivity((n) => n + 1);
-      setComplianceGates((n) => n + 1);
-      pushActivity("Payment prepared and awaiting approval", "warning");
-      const paymentLog: CommandLog = {
-        id: crypto.randomUUID(),
-        command: "Send payment",
-        status: "queued",
-        output: "Payment request queued at FTH Pay gate.",
-        at: nowTime(),
-      };
-      setLogs((prev) => [
-        paymentLog,
-        ...prev,
-      ].slice(0, 8));
-      return;
-    }
-
-    pushActivity("Deal room opened", "info");
-  };
+  const glowByTone = {
+    emerald: "from-emerald-400/25 to-cyan-400/10",
+    amber: "from-amber-400/25 to-orange-400/10",
+    blue: "from-blue-400/25 to-sky-400/10",
+    purple: "from-violet-400/25 to-fuchsia-400/10",
+  } as const;
 
   return (
-    <div className="mx-auto w-full max-w-7xl px-6 pb-24 pt-12">
-      <section className="rounded-3xl border border-white/10 bg-[#081628]/85 p-8 shadow-[0_30px_90px_rgba(0,0,0,0.45)] md:p-10">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="relative min-h-screen overflow-hidden bg-[#020611] text-white">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(40,93,255,0.35),transparent_26%),radial-gradient(circle_at_80%_0%,rgba(15,52,122,0.32),transparent_28%),radial-gradient(circle_at_50%_75%,rgba(0,178,255,0.14),transparent_30%)]" />
+      <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.04)_1px,transparent_1px)] [background-size:110px_110px]" />
+      <div className="pointer-events-none absolute -left-24 top-24 h-96 w-96 rounded-full bg-blue-500/20 blur-[120px]" />
+      <div className="pointer-events-none absolute right-0 top-0 h-[32rem] w-[32rem] rounded-full bg-cyan-400/10 blur-[150px]" />
+
+      <div className="relative mx-auto max-w-7xl px-6 py-6 lg:px-10">
+        <header className="mb-10 flex items-center justify-between rounded-[30px] border border-white/10 bg-white/[0.08] px-5 py-4 shadow-2xl shadow-black/30 backdrop-blur-2xl">
           <div>
-            <div className="text-xs uppercase tracking-[0.18em] text-[#96e8ff]">DOC OS</div>
-            <h1 className="mt-2 text-5xl font-extrabold leading-none text-white md:text-7xl">Command Surface</h1>
-            <p className="mt-3 text-lg text-white/65">Institutional Operating System</p>
+            <div className="text-[11px] uppercase tracking-[0.42em] text-blue-100/45">Doc OS</div>
+            <div className="mt-1 text-lg font-semibold text-white/95">Abyss Runtime / Institutional Control Surface</div>
           </div>
-          <div className="flex flex-col items-end gap-2">
-            <div className="rounded-xl border border-[#14b87a]/35 bg-[#14b87a]/12 px-4 py-2 text-sm font-semibold text-[#a6f5d2]">
-              Controlled Execution Active
+          <nav className="hidden items-center gap-6 text-sm text-white/65 md:flex">
+            <a href="#system" className="transition hover:text-cyan-200">System</a>
+            <a href="#rails" className="transition hover:text-cyan-200">Rails</a>
+            <a href="#activity" className="transition hover:text-cyan-200">Activity</a>
+            <a href="#network" className="transition hover:text-cyan-200">Network</a>
+            <a href="#access" className="transition hover:text-cyan-200">Access</a>
+          </nav>
+          <div className="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-3 py-1 text-xs font-medium text-cyan-200 backdrop-blur-xl">
+            LIVE EDGE SURFACE
+          </div>
+        </header>
+
+        <section className="grid gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-end">
+          <div>
+            <div className="mb-4 inline-flex rounded-full border border-blue-200/10 bg-white/[0.07] px-3 py-1 text-xs uppercase tracking-[0.32em] text-blue-100/55 shadow-xl shadow-black/20 backdrop-blur-xl">
+              private financial operating environment
             </div>
-            <div className="rounded-lg border border-[#f2b445]/35 bg-[#f2b445]/10 px-3 py-1 text-xs uppercase tracking-[0.12em] text-[#ffe09d]">
-              Static Demo Mode (Pages)
-            </div>
-          </div>
-        </div>
+            <h1 className="max-w-5xl text-5xl font-semibold leading-[0.9] tracking-tight text-white md:text-7xl">
+              Darker. Sharper. Liquid-glass control over wallets, treasuries, BTC, XRPL, and broker-dealer execution.
+            </h1>
+            <p className="mt-5 max-w-3xl text-base text-blue-50/65 md:text-lg">
+              Public front door into the DOC network built to feel like an abyss-blue command deck with live issuance, directives, payments, approvals, and institutional routing surfaces.
+            </p>
 
-        <div className="mt-8 grid gap-3 md:grid-cols-[1fr_auto]">
-          <input
-            value={command}
-            onChange={(e) => setCommand(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") runCommand();
-            }}
-            placeholder="Ask Doc AI to execute..."
-            className="h-14 w-full rounded-xl border border-white/20 bg-[#0a1e34] px-5 text-base text-white outline-none transition focus:border-[#5ce8f5]"
-          />
-          <button
-            onClick={runCommand}
-            className="h-14 rounded-xl bg-[#1cc5d8] px-6 text-sm font-bold text-[#072030] transition hover:bg-[#64e9f7]"
-          >
-            Run
-          </button>
-        </div>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          <a
-            href="https://doc.unykorn.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-xl border border-[#1cc5d8]/35 bg-[#1cc5d8]/10 px-4 py-3 text-sm font-semibold text-[#9cf3ff] transition hover:bg-[#1cc5d8]/20"
-          >
-            Open Runtime - doc.unykorn.org
-          </a>
-          <a
-            href="https://admin.doc.unykorn.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-xl border border-[#14b87a]/35 bg-[#14b87a]/10 px-4 py-3 text-sm font-semibold text-[#a6f5d2] transition hover:bg-[#14b87a]/20"
-          >
-            Open Admin - admin.doc.unykorn.org
-          </a>
-          <a
-            href="https://api.doc.unykorn.org"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-xl border border-[#f2b445]/35 bg-[#f2b445]/10 px-4 py-3 text-sm font-semibold text-[#ffe09d] transition hover:bg-[#f2b445]/20"
-          >
-            Open API - api.doc.unykorn.org
-          </a>
-        </div>
-      </section>
-
-      <section className="mt-8 grid grid-cols-2 gap-4 xl:grid-cols-5">
-        {stats.map((s) => (
-          <article key={s.label} className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-5">
-            <div className="text-xs uppercase tracking-[0.14em] text-white/45">{s.label}</div>
-            <div className={`mt-2 text-4xl font-bold ${s.tone}`}>{s.value}</div>
-          </article>
-        ))}
-      </section>
-
-      <section className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-        <article className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-6">
-          <h2 className="text-sm uppercase tracking-[0.14em] text-[#9adfff]">Action Grid</h2>
-          <div className="mt-4 grid grid-cols-1 gap-3 md:grid-cols-2">
-            <button onClick={() => quickAction("wallet")} className="rounded-xl border border-[#7bf4c3]/35 bg-[#7bf4c3]/10 p-4 text-left transition hover:bg-[#7bf4c3]/18">
-              <div className="text-lg font-semibold">Issue Wallet</div>
-              <div className="mt-1 text-sm text-white/65">Create and bind controlled wallet policy</div>
-            </button>
-            <button onClick={() => quickAction("ai")} className="rounded-xl border border-[#9adfff]/35 bg-[#9adfff]/10 p-4 text-left transition hover:bg-[#9adfff]/18">
-              <div className="text-lg font-semibold">Run AI Command</div>
-              <div className="mt-1 text-sm text-white/65">Queue supervised instruction execution</div>
-            </button>
-            <button onClick={() => quickAction("onboard")} className="rounded-xl border border-[#c8b4ff]/35 bg-[#c8b4ff]/10 p-4 text-left transition hover:bg-[#c8b4ff]/18">
-              <div className="text-lg font-semibold">Start Onboarding</div>
-              <div className="mt-1 text-sm text-white/65">Open investor or issuer intake flow</div>
-            </button>
-            <button onClick={() => quickAction("payment")} className="rounded-xl border border-[#ffd48a]/35 bg-[#ffd48a]/10 p-4 text-left transition hover:bg-[#ffd48a]/18">
-              <div className="text-lg font-semibold">Send Payment</div>
-              <div className="mt-1 text-sm text-white/65">Create payment request at FTH Pay gate</div>
-            </button>
-            <button onClick={() => quickAction("deal")} className="rounded-xl border border-[#ffbab8]/35 bg-[#ffbab8]/10 p-4 text-left transition hover:bg-[#ffbab8]/18 md:col-span-2">
-              <div className="text-lg font-semibold">Open Deal Room</div>
-              <div className="mt-1 text-sm text-white/65">Launch controlled deal operations workspace</div>
-            </button>
-          </div>
-        </article>
-
-        <article className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-6">
-          <h2 className="text-sm uppercase tracking-[0.14em] text-[#9adfff]">Activity Feed</h2>
-          <div className="mt-4 space-y-3">
-            {activity.map((item) => (
-              <div key={item.id} className="rounded-xl border border-white/10 bg-black/20 px-4 py-3">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-sm text-white/85">{item.text}</p>
-                  <span className="text-xs text-white/45">{item.at}</span>
-                </div>
-                <div className="mt-2">
-                  <span
-                    className={`rounded-full px-2 py-1 text-[10px] uppercase tracking-[0.12em] ${
-                      item.level === "success"
-                        ? "bg-[#14b87a]/25 text-[#98f2cf]"
-                        : item.level === "warning"
-                          ? "bg-[#f2b445]/25 text-[#ffe09d]"
-                          : "bg-[#1cc5d8]/25 text-[#9cf3ff]"
-                    }`}
-                  >
-                    {item.level}
-                  </span>
-                </div>
+            <div className="mt-8 rounded-[32px] border border-white/10 bg-white/[0.07] p-4 shadow-2xl shadow-black/30 backdrop-blur-2xl">
+              <div className="mb-3 text-xs uppercase tracking-[0.28em] text-blue-100/40">AI Command Surface</div>
+              <div className="group rounded-[24px] border border-white/10 bg-gradient-to-r from-white/10 via-white/[0.06] to-cyan-400/5 px-4 py-4 text-base text-white/80 transition hover:border-cyan-300/20 hover:bg-white/[0.1] md:text-lg">
+                Ask Doc AI to execute across issuance, payments, compliance, treasuries, and routing...
               </div>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {commandExamples.map((item) => (
+                  <button
+                    key={item}
+                    className="rounded-full border border-white/10 bg-white/[0.06] px-3 py-2 text-xs text-blue-50/60 transition hover:border-cyan-300/20 hover:bg-cyan-300/10 hover:text-cyan-100"
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-[34px] border border-white/10 bg-white/[0.08] p-5 shadow-2xl shadow-black/25 backdrop-blur-2xl">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <div className="text-xs uppercase tracking-[0.28em] text-blue-100/40">Operator Preview</div>
+                <div className="mt-1 text-xl font-semibold text-white/95">Genesis / FTH Pay / x402</div>
+              </div>
+              <div className="rounded-full border border-blue-300/20 bg-blue-300/10 px-3 py-1 text-xs text-blue-200">Guard Active</div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {stats.map((stat) => (
+                <div key={stat.label} className="rounded-[24px] border border-white/10 bg-black/20 p-4 backdrop-blur-xl transition hover:-translate-y-0.5 hover:border-cyan-300/20">
+                  <div className="text-xs uppercase tracking-[0.22em] text-blue-100/38">{stat.label}</div>
+                  <div className="mt-2 text-3xl font-semibold text-white">{stat.value}</div>
+                  <div className="mt-1 text-sm text-blue-50/45">{stat.sub}</div>
+                </div>
+              ))}
+            </div>
+            <div className="mt-4 rounded-[24px] border border-white/10 bg-black/20 p-4 backdrop-blur-xl">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <div className="text-xs uppercase tracking-[0.22em] text-blue-100/38">Execution Path</div>
+                  <div className="mt-2 text-lg font-medium text-white/95">AI -&gt; Policy -&gt; FTH Pay -&gt; x402 -&gt; Settlement</div>
+                </div>
+                <div className="rounded-full border border-amber-300/20 bg-amber-300/10 px-3 py-1 text-xs text-amber-200">Approval First</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="system" className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {stats.map((stat) => (
+            <div
+              key={`${stat.label}-strip`}
+              className="group rounded-[30px] border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:border-cyan-300/20 hover:bg-white/[0.08]"
+            >
+              <div className="text-xs uppercase tracking-[0.24em] text-blue-100/38">{stat.label}</div>
+              <div className="mt-3 text-4xl font-semibold text-white">{stat.value}</div>
+              <div className="mt-2 text-sm text-blue-50/45">{stat.sub}</div>
+            </div>
+          ))}
+        </section>
+
+        <section className="mt-10 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+          <div className="rounded-[32px] border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-2xl">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <div className="text-xs uppercase tracking-[0.26em] text-blue-100/40">Action Grid</div>
+                <div className="mt-1 text-2xl font-semibold text-white/95">Immediate Control</div>
+              </div>
+              <div className="text-sm text-blue-50/45">interactive surface</div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              {actions.map((action) => (
+                <button
+                  key={action.title}
+                  className="group rounded-[24px] border border-white/10 bg-black/20 px-4 py-5 text-left transition duration-300 hover:-translate-y-1 hover:border-cyan-300/20 hover:bg-cyan-300/10"
+                >
+                  <div className="text-sm font-medium text-white/90">{action.title}</div>
+                  <div className="mt-2 text-xs leading-5 text-blue-50/45">{action.sub}</div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div id="activity" className="rounded-[32px] border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-2xl">
+            <div className="mb-5 flex items-center justify-between">
+              <div>
+                <div className="text-xs uppercase tracking-[0.26em] text-blue-100/40">Live Activity</div>
+                <div className="mt-1 text-2xl font-semibold text-white/95">Recent System Movement</div>
+              </div>
+              <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-blue-50/45">real-time style</div>
+            </div>
+            <div className="space-y-3">
+              {activity.map((item) => (
+                <div
+                  key={`${item.time}-${item.title}`}
+                  className={`flex gap-4 rounded-[24px] border border-white/10 bg-gradient-to-r ${glowByTone[item.tone]} p-[1px]`}
+                >
+                  <div className="flex w-full gap-4 rounded-[23px] bg-[#07101d]/95 p-4 backdrop-blur-xl transition hover:bg-[#091526]/95">
+                    <div className="w-16 shrink-0 text-sm font-medium text-blue-50/45">{item.time}</div>
+                    <div>
+                      <div className="font-medium text-white/92">{item.title}</div>
+                      <div className="mt-1 text-sm text-blue-50/50">{item.meta}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="rails" className="mt-10">
+          <div className="mb-5 flex items-end justify-between gap-4">
+            <div>
+              <div className="text-xs uppercase tracking-[0.26em] text-blue-100/40">Treasuries / BTC / Rails</div>
+              <div className="mt-1 text-3xl font-semibold text-white/95">Real asset lanes and broker-dealer pathways.</div>
+            </div>
+            <div className="text-sm text-blue-50/45">click through surfaces</div>
+          </div>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {rails.map((rail) => (
+              <a
+                key={rail.title}
+                href={rail.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group rounded-[30px] border border-white/10 bg-white/[0.06] p-5 shadow-xl shadow-black/20 backdrop-blur-2xl transition duration-300 hover:-translate-y-1 hover:border-cyan-300/20 hover:bg-cyan-300/10"
+              >
+                <div className="inline-flex rounded-full border border-cyan-300/15 bg-cyan-300/10 px-3 py-1 text-[11px] uppercase tracking-[0.22em] text-cyan-100/85">
+                  {rail.tag}
+                </div>
+                <div className="mt-4 text-xl font-semibold text-white/95">{rail.title}</div>
+                <p className="mt-3 text-sm leading-6 text-blue-50/52">{rail.desc}</p>
+                <div className="mt-5 text-sm font-medium text-cyan-200/90">Open Surface -&gt;</div>
+              </a>
             ))}
           </div>
-        </article>
-      </section>
+        </section>
 
-      <section className="mt-8 grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
-        <article className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-6">
-        <h2 className="text-sm uppercase tracking-[0.14em] text-[#9adfff]">AI Panel</h2>
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-white/10 text-white/50">
-                <th className="px-3 py-2 font-medium">Time</th>
-                <th className="px-3 py-2 font-medium">Command</th>
-                <th className="px-3 py-2 font-medium">Status</th>
-                <th className="px-3 py-2 font-medium">Output</th>
-              </tr>
-            </thead>
-            <tbody>
-              {logs.map((log) => (
-                <tr key={log.id} className="border-b border-white/5">
-                  <td className="px-3 py-3 text-white/55">{log.at}</td>
-                  <td className="px-3 py-3 text-white/90">{log.command}</td>
-                  <td className="px-3 py-3">
-                    <span
-                      className={`rounded-full px-2 py-1 text-[10px] uppercase tracking-[0.12em] ${
-                        log.status === "executed"
-                          ? "bg-[#14b87a]/25 text-[#98f2cf]"
-                          : "bg-[#f2b445]/25 text-[#ffe09d]"
-                      }`}
-                    >
-                      {log.status}
-                    </span>
-                  </td>
-                  <td className="px-3 py-3 text-white/65">{log.output}</td>
-                </tr>
+        <section id="network" className="mt-10 grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+          <div className="rounded-[34px] border border-white/10 bg-gradient-to-br from-blue-500/12 via-white/[0.04] to-cyan-500/10 p-6 shadow-2xl shadow-black/25 backdrop-blur-2xl">
+            <div className="text-xs uppercase tracking-[0.26em] text-blue-100/40">AI / Network</div>
+            <div className="mt-1 text-3xl font-semibold text-white/95">The badass AI system should feel alive here.</div>
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-blue-50/58">
+              Doc AI should look like a dedicated internal team command interpretation, compliance review, routing, treasury prep, wallet issuance, and execution supervision in one visible layer.
+            </p>
+            <div className="mt-6 grid gap-3 md:grid-cols-2">
+              {systemLinks.map((item) => (
+                <a
+                  key={item.title}
+                  href={item.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-[24px] border border-white/10 bg-black/20 px-4 py-4 backdrop-blur-xl transition hover:-translate-y-1 hover:border-cyan-300/20 hover:bg-cyan-300/10"
+                >
+                  <div className="text-base font-medium text-white/92">{item.title}</div>
+                  <div className="mt-1 text-sm text-blue-50/48">{item.sub}</div>
+                </a>
               ))}
-            </tbody>
-          </table>
-        </div>
-        </article>
-
-        <article className="rounded-2xl border border-white/10 bg-[#0b1a2c]/80 p-6">
-          <h2 className="text-sm uppercase tracking-[0.14em] text-[#9adfff]">Suggested Next Actions</h2>
-          <div className="mt-4 space-y-3 text-sm text-white/75">
-            <button
-              onClick={() => setCommand("Issue wallet for new investor profile")}
-              className="w-full rounded-xl border border-white/15 bg-black/20 px-4 py-3 text-left transition hover:bg-white/10"
-            >
-              Queue wallet issuance for investor onboarding
-            </button>
-            <button
-              onClick={() => setCommand("Run compliance check on pending payment approvals")}
-              className="w-full rounded-xl border border-white/15 bg-black/20 px-4 py-3 text-left transition hover:bg-white/10"
-            >
-              Run compliance gate on queued payment approvals
-            </button>
-            <button
-              onClick={() => setCommand("Prepare FTH Pay preview for partner payout")}
-              className="w-full rounded-xl border border-white/15 bg-black/20 px-4 py-3 text-left transition hover:bg-white/10"
-            >
-              Prepare FTH Pay preview for partner payout
-            </button>
+            </div>
           </div>
-        </article>
-      </section>
+
+          <div id="access" className="rounded-[34px] border border-white/10 bg-white/[0.06] p-6 shadow-xl shadow-black/20 backdrop-blur-2xl">
+            <div className="text-xs uppercase tracking-[0.26em] text-blue-100/40">Execution Controls</div>
+            <div className="mt-1 text-2xl font-semibold text-white/95">Non-negotiable gates</div>
+            <ul className="mt-5 space-y-3 text-sm text-blue-50/58">
+              <li className="rounded-[22px] border border-white/10 bg-black/20 px-4 py-4">No payment execution without required approvals.</li>
+              <li className="rounded-[22px] border border-white/10 bg-black/20 px-4 py-4">No compliance bypass in automated workflows.</li>
+              <li className="rounded-[22px] border border-white/10 bg-black/20 px-4 py-4">No audit suppression during routing or settlement.</li>
+              <li className="rounded-[22px] border border-white/10 bg-black/20 px-4 py-4">x402 operates under FTH Pay control only.</li>
+            </ul>
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a href="https://doc.unykorn.org" target="_blank" rel="noopener noreferrer" className="rounded-[22px] bg-white px-5 py-3 text-sm font-semibold text-black transition hover:bg-white/90">
+                Enter Runtime
+              </a>
+              <a href="/compliance" className="rounded-[22px] border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-white/85 transition hover:bg-white/[0.08]">
+                Disclosures
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <footer className="mt-12 border-t border-white/10 py-8 text-sm text-blue-50/36">
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div>
+              <div className="font-semibold text-white/78">DOC OS</div>
+              <div className="mt-1 max-w-2xl text-blue-50/36">
+                Abyss-blue command-center front door for issuance, AI directives, FTH Pay, XRPL, BTC, treasuries, and controlled broker-dealer execution.
+              </div>
+            </div>
+            <div className="max-w-xl text-right text-xs leading-6 text-blue-50/30">
+              Securities, payments, treasury products, and digital asset workflows remain subject to policy, approval, and legal controls. Public site is informational; live runtime access is controlled.
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 }
