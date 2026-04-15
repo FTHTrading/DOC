@@ -164,8 +164,13 @@ export default function HomePage() {
             <h1 className="mt-2 text-5xl font-extrabold leading-none text-white md:text-7xl">Command Surface</h1>
             <p className="mt-3 text-lg text-white/65">Institutional Operating System</p>
           </div>
-          <div className="rounded-xl border border-[#14b87a]/35 bg-[#14b87a]/12 px-4 py-2 text-sm font-semibold text-[#a6f5d2]">
-            Controlled Execution Active
+          <div className="flex flex-col items-end gap-2">
+            <div className="rounded-xl border border-[#14b87a]/35 bg-[#14b87a]/12 px-4 py-2 text-sm font-semibold text-[#a6f5d2]">
+              Controlled Execution Active
+            </div>
+            <div className="rounded-lg border border-[#f2b445]/35 bg-[#f2b445]/10 px-3 py-1 text-xs uppercase tracking-[0.12em] text-[#ffe09d]">
+              Static Demo Mode (Pages)
+            </div>
           </div>
         </div>
 
