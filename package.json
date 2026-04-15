@@ -20,7 +20,16 @@
     "db:push": "pnpm --filter @doc/db push",
     "db:seed": "pnpm --filter @doc/db seed",
     "db:studio": "pnpm --filter @doc/db studio",
-    "validate:local": "node test-local.js"
+    "validate:local": "node test-local.js",
+    "genesis:verify": "powershell -ExecutionPolicy Bypass -File ./scripts/verify-genesis-build.ps1",
+    "genesis:smoke": "powershell -ExecutionPolicy Bypass -File ./scripts/smoke-test-issuance.ps1",
+    "boot:all": "powershell -ExecutionPolicy Bypass -File ./scripts/boot-all.ps1",
+    "health:dashboard": "powershell -ExecutionPolicy Bypass -File ./scripts/health-dashboard.ps1",
+    "cf:build:web": "pnpm --filter @doc/public-web build:cf",
+    "cf:build:admin": "pnpm --filter @doc/admin-web build:cf",
+    "cf:build": "pnpm cf:build:web && pnpm cf:build:admin",
+    "cf:deploy": "powershell -ExecutionPolicy Bypass -File ./cloudflare/deploy.ps1",
+    "cf:deploy:skip-build": "powershell -ExecutionPolicy Bypass -File ./cloudflare/deploy.ps1 -SkipBuild"
   },
   "workspaces": [
     "apps/*",

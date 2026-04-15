@@ -1,0 +1,83 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "doc-api",
+	"main": "../../apps/api/src/edge-worker.ts",
+	"compatibility_date": "2026-04-15",
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
+	"workers_dev": false,
+	"routes": [
+		{
+			"pattern": "api.doc.unykorn.org/*",
+			"zone_name": "unykorn.org"
+		}
+	],
+	"vars": {
+		"APP_ENV": "production",
+		"JWT_ISSUER": "doc-os",
+		"JWT_AUDIENCE": "doc-clients"
+	},
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "WALLET_SESSION_DO",
+				"class_name": "WalletSessionDO"
+			},
+			{
+				"name": "APPROVAL_ROOM_DO",
+				"class_name": "ApprovalRoomDO"
+			}
+		]
+	},
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_sqlite_classes": [
+				"WalletSessionDO",
+				"ApprovalRoomDO"
+			]
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "DOC_FILES",
+			"bucket_name": "doc-os-files-prod"
+		}
+	],
+	"queues": {
+		"producers": [
+			{
+				"binding": "ISSUANCE_QUEUE",
+				"queue": "doc-issuance-prod"
+			},
+			{
+				"binding": "PAYMENTS_QUEUE",
+				"queue": "doc-payments-prod"
+			},
+			{
+				"binding": "AI_QUEUE",
+				"queue": "doc-ai-prod"
+			},
+			{
+				"binding": "COMPLIANCE_QUEUE",
+				"queue": "doc-compliance-prod"
+			},
+			{
+				"binding": "NOTIFY_QUEUE",
+				"queue": "doc-notify-prod"
+			}
+		]
+	},
+	"triggers": {
+		"crons": [
+			"*/5 * * * *"
+		]
+	},
+	"observability": {
+		"enabled": true
+	},
+	"placement": {
+		"mode": "smart"
+	}
+}

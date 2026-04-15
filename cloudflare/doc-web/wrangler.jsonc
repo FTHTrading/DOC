@@ -1,0 +1,73 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "doc-web",
+	"main": "../../apps/public-web/.open-next/worker.js",
+	"compatibility_date": "2026-04-15",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"workers_dev": false,
+	"assets": {
+		"directory": "../../apps/public-web/.open-next/assets",
+		"binding": "ASSETS"
+	},
+	"routes": [
+		{
+			"pattern": "doc.unykorn.org/*",
+			"zone_name": "unykorn.org"
+		}
+	],
+	"vars": {
+		"APP_ENV": "production",
+		"NEXT_PUBLIC_APP_NAME": "DOC OS",
+		"NEXT_PUBLIC_API_BASE": "https://api.doc.unykorn.org"
+	},
+	"services": [
+		{
+			"binding": "WORKER_SELF_REFERENCE",
+			"service": "doc-web"
+		}
+	],
+	"migrations": [
+		{
+			"tag": "v2",
+			"deleted_classes": ["WalletRoomDO", "CommandRoomDO"]
+		}
+	],
+	"r2_buckets": [
+		{
+			"binding": "DOC_FILES",
+			"bucket_name": "doc-os-files-prod"
+		},
+		{
+			"binding": "NEXT_INC_CACHE_R2_BUCKET",
+			"bucket_name": "doc-web-cache-prod"
+		}
+	],
+	"images": {
+		"binding": "IMAGES"
+	},
+	"queues": {
+		"producers": [
+			{
+				"binding": "ISSUANCE_QUEUE",
+				"queue": "doc-issuance-prod"
+			},
+			{
+				"binding": "NOTIFY_QUEUE",
+				"queue": "doc-notify-prod"
+			},
+			{
+				"binding": "AI_QUEUE",
+				"queue": "doc-ai-prod"
+			}
+		]
+	},
+	"observability": {
+		"enabled": true
+	},
+	"placement": {
+		"mode": "smart"
+	}
+}

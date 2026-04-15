@@ -1,0 +1,55 @@
+name = "doc-web"
+main = ".open-next/worker.js"
+compatibility_date = "2026-04-15"
+compatibility_flags = ["nodejs_compat"]
+workers_dev = false
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
+
+[[routes]]
+pattern = "doc.unykorn.org/*"
+zone_name = "unykorn.org"
+
+[vars]
+APP_ENV = "production"
+NEXT_PUBLIC_APP_NAME = "DOC OS"
+NEXT_PUBLIC_API_BASE = "https://api.doc.unykorn.org"
+
+[[durable_objects.bindings]]
+name = "WALLET_ROOM"
+class_name = "WalletRoomDO"
+
+[[durable_objects.bindings]]
+name = "COMMAND_ROOM"
+class_name = "CommandRoomDO"
+
+[[r2_buckets]]
+binding = "DOC_FILES"
+bucket_name = "doc-os-files-prod"
+
+[[queues.producers]]
+binding = "ISSUANCE_QUEUE"
+queue = "doc-issuance-prod"
+
+[[queues.producers]]
+binding = "NOTIFY_QUEUE"
+queue = "doc-notify-prod"
+
+[[queues.producers]]
+binding = "AI_QUEUE"
+queue = "doc-ai-prod"
+
+[[hyperdrive]]
+binding = "DOC_DB"
+id = "<HYPERDRIVE_ID>"
+
+[observability]
+enabled = true
+
+[placement]
+mode = "smart"
+
+[build]
+command = "pnpm --filter @doc/public-web build:cf"

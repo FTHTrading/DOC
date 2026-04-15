@@ -24,6 +24,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <span className="font-semibold text-lg tracking-tight">DOC Platform</span>
           </div>
           <div className="flex items-center gap-6 text-sm text-white/60">
+            <a href="/" className="hover:text-white transition-colors">Home</a>
+            <a href="/system" className="hover:text-white transition-colors">System</a>
             <a href="/investors" className="hover:text-white transition-colors">Investors</a>
             <a href="/issuers" className="hover:text-white transition-colors">Issuers</a>
             <a href="/partners" className="hover:text-white transition-colors">Partners</a>
@@ -46,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <div>
               <div className="text-white/70 font-medium mb-3">Platform</div>
               <div className="space-y-2">
+                <a href="/system" className="block hover:text-white transition-colors">System TOC</a>
                 <a href="/investors" className="block hover:text-white transition-colors">For Investors</a>
                 <a href="/issuers" className="block hover:text-white transition-colors">For Issuers</a>
                 <a href="/partners" className="block hover:text-white transition-colors">For Partners</a>

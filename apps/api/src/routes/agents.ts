@@ -29,9 +29,12 @@ export async function agentsRoutes(app: FastifyInstance) {
       const user = req.user as { sub: string } | undefined;
       const result = await runAgent({
         agentSlug: req.params.slug,
-        userMessage: parsed.data.userMessage,
-        systemContext: parsed.data.systemContext,
-        triggeredById: user?.sub,
+        input: {
+          userMessage: parsed.data.userMessage,
+          systemContext: parsed.data.systemContext ?? {},
+          ...(parsed.data.threadId ? { threadId: parsed.data.threadId } : {}),
+        },
+        ...(user?.sub ? { triggeredById: user.sub } : {}),
       });
 
       return { ok: true, data: result };

@@ -223,6 +223,39 @@ POST /reports/generate
 → { reportId, type, generatedAt, data }
 ```
 
+**AI Command Execution**
+```
+POST /ai/commands/execute
+```
+
+Plan mode (no workflow dispatch):
+
+```json
+{
+       "command": "Create 2 investor wallets and enable FTH Pay",
+       "mode": "plan",
+       "context": { "issuer": "doc-master" }
+}
+```
+
+Execute mode (dispatches workflow + writes audit):
+
+```json
+{
+       "command": "Create a broker wallet for Lisa Carter with internal-only permissions and FTH Pay enabled",
+       "mode": "execute"
+}
+```
+
+Current intent mappings:
+- wallet issuance (single + batch)
+- payment request/transfer request
+- compliance start
+- onboarding start
+- message dispatch
+
+Policy gate blocks high-risk directives such as bypassing approvals or disabling audit trails.
+
 ---
 
 ## Workflows (What Triggers What)

@@ -19,6 +19,7 @@
     "@doc/communications": "workspace:*",
     "@doc/intake-engine": "workspace:*",
     "@doc/orchestrator-core": "workspace:*",
+    "@doc/x402-router": "workspace:*",
     "@doc/mcp-runtime": "workspace:*",
     "@doc/reporting": "workspace:*",
     "@doc/treasury-adapter": "workspace:*",
